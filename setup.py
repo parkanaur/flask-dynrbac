@@ -9,7 +9,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 
 setup(
-    name='flask_dynrbac',
+    name='flask-dynrbac',
     version='0.0.1',
     packages=find_packages(),
     description='A Flask extension for dynamic role-based access',
