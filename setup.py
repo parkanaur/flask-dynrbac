@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 from io import open
 
-with open('README.md', encoding='utf-8') as f:
-    long_description = f.read()
+# with open('README.md', encoding='utf-8') as f:
+#     long_description = f.read()
 
 
 setup(
@@ -10,8 +10,8 @@ setup(
     version='0.0.1',
     packages=find_packages(),
     description='A Flask extension for dynamic role-based access',
-    long_description=long_description,
-    long_description_content_type='text/markdown',
+    # long_description=long_description,
+    # long_description_content_type='text/markdown',
     url='https://github.com/parkanaur/flask-dynrbac',
     author='Daniil Kraynov',
     author_email='krd@airmail.cc',
