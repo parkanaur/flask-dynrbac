@@ -7,7 +7,7 @@ class DynRBAC(object):
     register it, as well as HTTP API and an optional web interface for
     role handling."""
 
-    def __init__(self, app):
+    def __init__(self, app=None):
         self.app = app
 
         if app is not None:
@@ -15,6 +15,9 @@ class DynRBAC(object):
 
     def init_app(self, app):
         if app.extensions.get('sqlalchemy') is None:
-            raise util.SQLAlchemyNotSuppliedException('Flask-SQLAlchemy is not initialized before DynRBAC.'
-                                                      'DynRBAC requires SQLAlchemy for role and permission data '
-                                                      'storage.')
+            raise util.SQLAlchemyNotSuppliedWarning('Flask-SQLAlchemy is not initialized before DynRBAC. '
+                                                    'DynRBAC requires SQLAlchemy for role and permission data '
+                                                    'storage.')
+
+    def rbac(self, func):
+        pass

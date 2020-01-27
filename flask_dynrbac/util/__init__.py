@@ -1,1 +1,1 @@
-from .SQLAlchemyNotSuppliedException import SQLAlchemyNotSuppliedException
+from .SQLAlchemyNotSuppliedWarning import SQLAlchemyNotSuppliedWarning
