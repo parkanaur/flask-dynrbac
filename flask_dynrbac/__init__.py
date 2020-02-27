@@ -1,5 +1,7 @@
 from . import util
 
+from functools import wraps
+
 
 class DynRBAC(object):
     """Allows for dynamic role-based access control (RBAC)
@@ -29,5 +31,12 @@ class DynRBAC(object):
                                                     'DynRBAC requires SQLAlchemy for role and permission data '
                                                     'storage.')
 
-    def rbac(self, func):
-        pass
+    def rbac(self, unit_name=None, check_hierarchy=False):
+        """ Restricts access to a function based on a role/permission list.
+            The list is retrieved from a project database. """
+        def decorator(func):
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                return None
+            return wrapper
+        return decorator

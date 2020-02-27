@@ -1,1 +1,2 @@
 from .SQLAlchemyNotSuppliedWarning import SQLAlchemyNotSuppliedWarning
+from .DomainModelWarning import DomainModelWarning
