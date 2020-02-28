@@ -34,9 +34,14 @@ class DynRBAC(object):
     def rbac(self, unit_name=None, check_hierarchy=False):
         """ Restricts access to a function based on a role/permission list.
             The list is retrieved from a project database. """
+
         def decorator(func):
             @wraps(func)
             def wrapper(*args, **kwargs):
-                return None
+
+                unit = unit_name if unit_name is not None else func.__name__
+                return func(*args, **kwargs)
+
             return wrapper
+
         return decorator
