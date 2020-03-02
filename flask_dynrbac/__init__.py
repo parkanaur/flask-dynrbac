@@ -9,14 +9,26 @@ class DynRBAC(object):
     register it, as well as HTTP API and an optional web interface for
     role handling.
 
+    In order to function properly, the extension has to be supplied with the
+    Role, Permission, and User classes, which in turn have to be based
+    on SQLAlchemy's `declarative_base` (Flask-SQLAlchemy provides an alias - `flask_sqlalchemy.Model`, which
+    most common entities inherit from).
+    Mixins are available for quicker development.
+
     :param app: Flask app
+    :param role_class: Role entity class
+    :param permission_class: Permission entity class
+    :param user_class: User entity class
     :param global_error_code: HTTP error code to return in case of permission mismatch. Defaults to 401
     """
 
-    def __init__(self, app=None, global_error_code=401):
+    def __init__(self, app=None, role_class=None, permission_class=None, user_class=None, global_error_code=401):
         """Initializes, configures and binds the extension instance to an app"""
         self.app = app
         self.global_error_code = global_error_code
+        self.role_class = role_class
+        self.permission_class = permission_class
+        self.user_class = user_class
 
         if app is not None:
             self.init_app(app)
@@ -43,8 +55,8 @@ class DynRBAC(object):
         """ Restricts access to a function based on a role/permission list.
             The list is retrieved from the app's database.
 
-            :param unit_name: Optional name for a unit for database storage. Defaults to func name
-            :param check_hierarchy: Allows for recursive check of user roles' parents' permissions.
+            :param unit_name: Optional name for a function for database storage. Defaults to func name
+            :param check_hierarchy: Allows for recursive check of user roles' parent permissions.
             :param error_code: HTTP status code to return in case of permission mismatch. Defaults to
                 `self.global_error_code`
             """

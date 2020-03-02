@@ -7,12 +7,18 @@ import flask_dynrbac as fd
 class ExtensionInitTestCase(unittest.TestCase):
     """Unit tests for extension initialization"""
 
-    def test_simple_initialization(self):
-        """Should call __init__ without errors"""
+    @staticmethod
+    def _generate_app():
         app = Flask(__name__)
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         db = SQLAlchemy(app)
+
+        return app
+
+    def test_simple_initialization(self):
+        """Should call __init__ without errors"""
+        app = self._generate_app()
 
         rbac = fd.DynRBAC(app)
 
@@ -21,10 +27,7 @@ class ExtensionInitTestCase(unittest.TestCase):
 
     def test_init_app_initialization(self):
         """Should call init_app properly"""
-        app = Flask(__name__)
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-        db = SQLAlchemy(app)
+        app = self._generate_app()
 
         rbac = fd.DynRBAC()
         rbac.init_app(app)
