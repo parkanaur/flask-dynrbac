@@ -21,6 +21,8 @@ the pluggable API with optional HTML views.
 Documentation
 =============
 
+All the work is done by the :meth:`flask_dynrbac.DynRBAC.rbac` decorator.
+
 .. automodule:: flask_dynrbac
    :members:
 
