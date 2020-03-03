@@ -47,9 +47,21 @@ class DynRBAC(object):
             Throws a warning if some requirement is not met."""
 
         if app.extensions.get('sqlalchemy') is None:
-            raise util.SQLAlchemyNotSuppliedWarning('Flask-SQLAlchemy is not initialized before DynRBAC. '
-                                                    'DynRBAC requires SQLAlchemy for role and permission data '
-                                                    'management.')
+            raise util.DynRBACInitWarning('Flask-SQLAlchemy is not initialized before DynRBAC. '
+                                          'DynRBAC requires SQLAlchemy for role and permission data '
+                                          'management.')
+
+        if self.role_class is None:
+            raise util.DynRBACInitWarning('Role class is not supplied. It is required for proper functioning of this'
+                                          'extension. RoleMixin is available for quicker development.')
+
+        if self.permission_class is None:
+            raise util.DynRBACInitWarning('Permission class is not supplied. It is required for proper functioning of '
+                                          'this extension. PermissionMixin is available for quicker development.')
+
+        if self.user_class is None:
+            raise util.DynRBACInitWarning('User class is not supplied. It is required for proper functioning of this'
+                                          'extension. UserMixin is available for quicker development.')
 
     def rbac(self, unit_name=None, check_hierarchy=False, error_code=None):
         """ Restricts access to a function based on a role/permission list.
@@ -67,7 +79,6 @@ class DynRBAC(object):
         def decorator(func):
             @wraps(func)
             def wrapper(*args, **kwargs):
-
                 unit = unit_name if unit_name is not None else func.__name__
                 return func(*args, **kwargs)
 

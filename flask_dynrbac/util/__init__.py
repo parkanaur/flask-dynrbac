@@ -1,2 +1,3 @@
-from .SQLAlchemyNotSuppliedWarning import SQLAlchemyNotSuppliedWarning
-from .DomainModelWarning import DomainModelWarning
+class DynRBACInitWarning(Exception):
+    """Custom warning which is thrown during initialization if SQLAlchemy is not initialized or Role/Permission/
+    User classes are not supplied."""
