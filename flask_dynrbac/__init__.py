@@ -19,10 +19,10 @@ class DynRBAC(object):
     :param role_class: Role entity class
     :param permission_class: Permission entity class
     :param user_class: User entity class
-    :param global_error_code: HTTP error code to return in case of permission mismatch. Defaults to 401
+    :param global_error_code: HTTP error code to return in case of permission mismatch. Defaults to 403 Forbidden
     """
 
-    def __init__(self, app=None, role_class=None, permission_class=None, user_class=None, global_error_code=401):
+    def __init__(self, app=None, role_class=None, permission_class=None, user_class=None, global_error_code=403):
         """Initializes, configures and binds the extension instance to an app"""
         self.app = app
         self.global_error_code = global_error_code
@@ -73,13 +73,12 @@ class DynRBAC(object):
                 `self.global_error_code`
             """
 
-        if error_code is None:
-            error_code = self.global_error_code
+        error_code = error_code or self.global_error_code
 
         def decorator(func):
             @wraps(func)
             def wrapper(*args, **kwargs):
-                unit = unit_name if unit_name is not None else func.__name__
+                unit = unit_name or func.__name__
                 return func(*args, **kwargs)
 
             return wrapper

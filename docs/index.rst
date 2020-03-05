@@ -6,6 +6,9 @@
 Welcome to Flask-DynRBAC's documentation!
 =========================================
 
+**ATTENTION**: this extension is still WIP. Use at your own risk.
+
+
 Flask-DynRBAC is a Flask extension which allows for dynamic
 role based access control and management, which is based on
 database lookups and stores::
@@ -18,8 +21,8 @@ database lookups and stores::
 Role and permission management can be done manually or via
 the pluggable API with optional HTML views.
 
-Documentation
-=============
+How it works
+============
 
 All the work is done by the :meth:`flask_dynrbac.DynRBAC.rbac` decorator.
 
@@ -27,6 +30,12 @@ All the work is done by the :meth:`flask_dynrbac.DynRBAC.rbac` decorator.
    :members:
 
 .. automodule:: flask_dynrbac.util
+   :members:
+
+Mixins
+======
+
+.. automodule:: flask_dynrbac.util.mixins
    :members:
 
 .. toctree::
