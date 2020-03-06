@@ -1,6 +1,7 @@
 from . import util
 
 from functools import wraps
+import warnings
 
 
 class DynRBAC(object):
@@ -30,6 +31,9 @@ class DynRBAC(object):
         self.permission_class = permission_class
         self.user_class = user_class
 
+        #: Current endpoint collection
+        self.registered_endpoints = {}
+
         if app is not None:
             self.init_app(app)
 
@@ -47,21 +51,22 @@ class DynRBAC(object):
             Throws a warning if some requirement is not met."""
 
         if app.extensions.get('sqlalchemy') is None:
-            raise util.DynRBACInitWarning('Flask-SQLAlchemy is not initialized before DynRBAC. '
-                                          'DynRBAC requires SQLAlchemy for role and permission data '
-                                          'management.')
+            warnings.warn('Flask-SQLAlchemy is not initialized before DynRBAC. '
+                          'DynRBAC requires SQLAlchemy for role and permission data '
+                          'management.', util.DynRBACInitWarning)
 
         if self.role_class is None:
-            raise util.DynRBACInitWarning('Role class is not supplied. It is required for proper functioning of this'
-                                          'extension. RoleMixin is available for quicker development.')
+            warnings.warn('Role class is not supplied. It is required for proper functioning of this'
+                          'extension. RoleMixin is available for quicker development.', util.DynRBACInitWarning)
 
         if self.permission_class is None:
-            raise util.DynRBACInitWarning('Permission class is not supplied. It is required for proper functioning of '
-                                          'this extension. PermissionMixin is available for quicker development.')
+            warnings.warn('Permission class is not supplied. It is required for proper functioning of '
+                          'this extension. PermissionMixin is available for quicker development.',
+                          util.DynRBACInitWarning)
 
         if self.user_class is None:
-            raise util.DynRBACInitWarning('User class is not supplied. It is required for proper functioning of this'
-                                          'extension. UserMixin is available for quicker development.')
+            warnings.warn('User class is not supplied. It is required for proper functioning of this'
+                          'extension. UserMixin is available for quicker development.', util.DynRBACInitWarning)
 
     def rbac(self, unit_name=None, check_hierarchy=False, error_code=None):
         """ Restricts access to a function based on a role/permission list.
@@ -79,6 +84,10 @@ class DynRBAC(object):
             @wraps(func)
             def wrapper(*args, **kwargs):
                 unit = unit_name or func.__name__
+
+                if unit in self.registered_endpoints:
+                    raise KeyError('')
+
                 return func(*args, **kwargs)
 
             return wrapper
