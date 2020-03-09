@@ -21,15 +21,22 @@ class DynRBAC(object):
     :param permission_class: Permission entity class
     :param user_class: User entity class
     :param global_error_code: HTTP error code to return in case of permission mismatch. Defaults to 403 Forbidden
+    :param unique_unit_names_only: If True, disallows repeating unit names during endpoint registration,
+        i.e., there cannot be two functions with the same unit_name supplied to them. Setting this to True
+        will require additional precautionary measures if your app has modules with repeating names (and with route
+        definitions in those modules) and if you leave unit_name parameters blank (see default unit_name in
+        :meth:`flask_dynrbac.DynRBAC.rbac`).
     """
 
-    def __init__(self, app=None, role_class=None, permission_class=None, user_class=None, global_error_code=403):
+    def __init__(self, app=None, role_class=None, permission_class=None, user_class=None, global_error_code=403,
+                 unique_unit_names_only=False):
         """Initializes, configures and binds the extension instance to an app"""
         self.app = app
         self.global_error_code = global_error_code
         self.role_class = role_class
         self.permission_class = permission_class
         self.user_class = user_class
+        self.unique_unit_names_only = unique_unit_names_only
 
         #: Current endpoint collection
         self.registered_endpoints = {}
@@ -72,7 +79,8 @@ class DynRBAC(object):
         """ Restricts access to a function based on a role/permission list.
             The list is retrieved from the app's database.
 
-            :param unit_name: Optional name for a function for database storage. Defaults to func name
+            :param unit_name: Optional name for a function for database storage. Defaults to `func.__module__ + "_" +
+                func.__name__`
             :param check_hierarchy: Allows for recursive check of user roles' parent permissions.
             :param error_code: HTTP status code to return in case of permission mismatch. Defaults to
                 `self.global_error_code`
@@ -82,7 +90,7 @@ class DynRBAC(object):
             err = error_code or self.global_error_code
             unit = unit_name or '{module}_{name}'.format(module=func.__module__, name=func.__name__)
 
-            if unit in self.registered_endpoints:
+            if unit in self.registered_endpoints and self.unique_unit_names_only:
                 raise KeyError('Unit {unit} is already registered in the extension. Change its name or use '
                                'a provided default (func.__module__ + "_" + func.__name__'.format(unit=unit))
 

@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 
 
-class UserMixin(SQLAlchemy.Model):
+class UserMixin:
     """Mixin to use on a User class"""
     pass
 

@@ -26,6 +26,8 @@ def test_register_endpoints(inited_app):
 def test_fail_register_same_unit_name(inited_app):
     """Should fail if the same unit name is already in dict"""
     app, rbac = inited_app
+    rbac.unique_unit_names_only = True
+    
     with pytest.raises(KeyError):
 
         @rbac.rbac(unit_name='non-unique name')
