@@ -83,11 +83,11 @@ class DynRBAC(object):
         def decorator(func):
             @wraps(func)
             def wrapper(*args, **kwargs):
-                unit = unit_name or f'{func.__module__}_{func.__name__}'
+                unit = unit_name or '{module}_{name}'.format(module=func.__module__, name=func.__name__)
 
                 if unit in self.registered_endpoints:
-                    raise KeyError(f'Unit {unit} is already registered in the extension. Change its name or use '
-                                   f'a provided default (func.__module__ + "_" + func.__name__')
+                    raise KeyError('Unit {unit} is already registered in the extension. Change its name or use '
+                                   'a provided default (func.__module__ + "_" + func.__name__'.format(unit=unit))
 
                 return func(*args, **kwargs)
 
