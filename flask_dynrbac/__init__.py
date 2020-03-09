@@ -78,17 +78,18 @@ class DynRBAC(object):
                 `self.global_error_code`
             """
 
-        error_code = error_code or self.global_error_code
-
         def decorator(func):
+            err = error_code or self.global_error_code
+            unit = unit_name or '{module}_{name}'.format(module=func.__module__, name=func.__name__)
+
+            if unit in self.registered_endpoints:
+                raise KeyError('Unit {unit} is already registered in the extension. Change its name or use '
+                               'a provided default (func.__module__ + "_" + func.__name__'.format(unit=unit))
+
+            self.registered_endpoints[unit] = func
+
             @wraps(func)
             def wrapper(*args, **kwargs):
-                unit = unit_name or '{module}_{name}'.format(module=func.__module__, name=func.__name__)
-
-                if unit in self.registered_endpoints:
-                    raise KeyError('Unit {unit} is already registered in the extension. Change its name or use '
-                                   'a provided default (func.__module__ + "_" + func.__name__'.format(unit=unit))
-
                 return func(*args, **kwargs)
 
             return wrapper
