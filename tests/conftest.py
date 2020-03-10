@@ -38,3 +38,9 @@ def inited_app(app, role_class, permission_class, user_class):
     rbac = DynRBAC(app, role_class, permission_class, user_class)
 
     return app, rbac
+
+
+@pytest.fixture
+def decl_base():
+    sqlalchemy = SQLAlchemy()
+    return sqlalchemy.Model
