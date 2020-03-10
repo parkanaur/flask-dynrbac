@@ -35,6 +35,13 @@ All the work is done by the :meth:`flask_dynrbac.DynRBAC.rbac` decorator.
 Mixins
 ======
 
+You can use mixins in order to expand or create new entity classes that
+fit into your domain model. Alternatively, you can simply copy and paste
+the mixins' source code into your classes.
+
+All mixins derive from :class:`flask_dynrbac.util.mixins.EntityBase` class,
+which contains `ID` and `tablename` attributes.
+
 .. automodule:: flask_dynrbac.util.mixins
    :members:
 

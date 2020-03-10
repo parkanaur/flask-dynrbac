@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 
-class _EntityBase(object):
+class EntityBase(object):
     """Base class for all entities which contains useful attributes"""
 
     @declared_attr
@@ -17,29 +17,29 @@ class _EntityBase(object):
         return self.__name__.lower()
 
 
-class UnitMixin(_EntityBase):
+class UnitMixin(EntityBase):
     """Mixin to use on a Unit class, which represents a source code unit (e.g. function)"""
 
-    # Unit name
+    #: Unit name
     name = Column(String, unique=True, nullable=False)
 
 
-class UserMixin(_EntityBase):
+class UserMixin(EntityBase):
     """Mixin to use on a User class"""
     pass
 
 
-class PermissionMixin(_EntityBase):
+class PermissionMixin(EntityBase):
     """Mixin to use on a Permission class"""
 
-    # Permission name
+    #: Permission name
     name = Column(String, unique=True, nullable=False)
 
 
-class RoleMixin(_EntityBase):
+class RoleMixin(EntityBase):
     """Mixin to use on a Role class"""
 
-    # Role name
+    #: Role name
     name = Column(String, unique=True, nullable=False)
 
 
