@@ -1,2 +1,3 @@
 Pallets-Sphinx-Themes
 sphinx==2.4.3
+-r ../requirements.txt
