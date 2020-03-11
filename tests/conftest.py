@@ -42,5 +42,5 @@ def inited_app(app, role_class, permission_class, user_class):
 
 @pytest.fixture
 def decl_base():
-    sqlalchemy = SQLAlchemy()
-    return sqlalchemy.Model
+    db = SQLAlchemy()
+    return db.Model

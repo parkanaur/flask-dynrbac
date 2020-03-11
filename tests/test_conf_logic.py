@@ -15,9 +15,6 @@ def test_register_endpoints(inited_app):
 
     r = rbac.registered_endpoints
 
-    for k, v in r.items():
-        print(k, v)
-
     assert len(r) == 2
     assert 'name1' in r
     assert 'test_conf_logic_y' in r

@@ -10,6 +10,7 @@ def test_user_class(decl_base):
 
     assert hasattr(User, 'id')
     assert hasattr(User, '__tablename__')
+    assert User.__tablename__ == 'user'
 
 
 def test_permission_class(decl_base):
@@ -20,6 +21,7 @@ def test_permission_class(decl_base):
 
     assert hasattr(Permission, 'id')
     assert hasattr(Permission, '__tablename__')
+    assert Permission.__tablename__ == 'permission'
 
 
 def test_role_class(decl_base):
@@ -30,6 +32,7 @@ def test_role_class(decl_base):
 
     assert hasattr(Role, 'id')
     assert hasattr(Role, '__tablename__')
+    assert Role.__tablename__ == 'role'
 
 
 def test_unit_class(decl_base):
@@ -40,3 +43,4 @@ def test_unit_class(decl_base):
 
     assert hasattr(Unit, 'id')
     assert hasattr(Unit, '__tablename__')
+    assert Unit.__tablename__ == 'unit'

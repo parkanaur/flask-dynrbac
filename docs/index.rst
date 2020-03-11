@@ -21,6 +21,10 @@ database lookups and stores::
 Role and permission management can be done manually or via
 the pluggable API with optional HTML views.
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
 How it works
 ============
 
@@ -40,14 +44,21 @@ fit into your domain model. Alternatively, you can simply copy and paste
 the mixins' source code into your classes.
 
 All mixins derive from :class:`flask_dynrbac.util.mixins.EntityBase` class,
-which contains `ID` and `tablename` attributes.
+which contains ``ID`` and ``tablename`` attributes.
+
+In order to use a mixin, derive your entity class both from a mixin and
+SQLAlchemy's model class (e.g. `declarative_base` or flask-sqlalchemy's `Model`)::
+
+   from flask_sqlalchemy import SQLAlchemy
+   from flask_dynrbac.util.mixins import *
+
+   db = SQLAlchemy(app)
+
+   class Role(db.Model, RoleMixin):
+      pass
 
 .. automodule:: flask_dynrbac.util.mixins
    :members:
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
 
 Pluggable API
 =============
