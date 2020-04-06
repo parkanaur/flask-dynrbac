@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy.ext.associationproxy import association_proxy
 
 
 class EntityBase(object):
@@ -16,19 +17,27 @@ class MixinGenerator(object):
     """Helper metaclass which generates mixins with all the necessary attributes based on supplied class names.
     Due to how SQLAlchemy works,
 
-    :param user_class_name: User class name (defaults to 'user')
+    :param user_table_name: User table name (defaults to 'users')
+    :param role_table_name: Role table name (defaults to 'roles')
+    :param permission_table_name: Permission table name (defaults to 'permissions')
+    :param unit_table_name: Unit table name (defaults to 'units')
+    :param role_permission_table_name: Role-Permission table name (defaults to 'role_permissions')
+    :param user_role_table_name: User-Role table name (defaults to 'user_roles')
+    :param unit_permission_table_name: Unit-Permission table name (defaults to 'unit_permissions')
     """
 
-    def __init__(self, user_class_name='user', role_class_name='role', permission_class_name='permission',
-                 unit_class_name='unit', role_permission_class_name='role_permissions',
-                 user_role_class_name='user_roles', unit_permission_class_name='unit_permissions'):
-        self.user_class_name = user_class_name
-        self.role_class_name = role_class_name
-        self.permission_class_name = permission_class_name
-        self.unit_class_name = unit_class_name
-        self.role_permission_class_name = role_permission_class_name
-        self.user_role_class_name = user_role_class_name
-        self.unit_permission_class_name = unit_permission_class_name
+    def __init__(self,
+                 user_table_name='users', role_table_name='roles', permission_table_name='permissions',
+                 unit_table_name='units', role_permission_table_name='role_permissions',
+                 user_role_table_name='user_roles', unit_permission_table_name='unit_permissions',
+                 ):
+        self.user_table_name = user_table_name
+        self.role_table_name = role_table_name
+        self.permission_table_name = permission_table_name
+        self.unit_table_name = unit_table_name
+        self.role_permission_table_name = role_permission_table_name
+        self.user_role_table_name = user_role_table_name
+        self.unit_permission_table_name = unit_permission_table_name
 
         self._generate_classes()
         self._generate_relationships()
@@ -38,13 +47,15 @@ class MixinGenerator(object):
 
         class User(EntityBase):
             """Mixin to use on a User class"""
-            __tablename__ = self.user_class_name
+            __tablename__ = self.user_table_name
+
+            roles = association_proxy('user_roles', 'role')
 
         self.user_class = User
 
         class Unit(EntityBase):
             """Mixin to use on a Unit class, which represents a source code unit (e.g. function)"""
-            __tablename__ = self.unit_class_name
+            __tablename__ = self.unit_table_name
 
             #: Unit name
             name = Column(String, unique=True, nullable=False)
@@ -53,7 +64,7 @@ class MixinGenerator(object):
 
         class Permission(EntityBase):
             """Mixin to use on a Permission class"""
-            __tablename__ = self.permission_class_name
+            __tablename__ = self.permission_table_name
 
             #: Permission name
             name = Column(String, unique=True, nullable=False)
@@ -62,24 +73,34 @@ class MixinGenerator(object):
 
         class Role(EntityBase):
             """Mixin to use on a Role class"""
-            __tablename__ = self.role_class_name
+            __tablename__ = self.role_table_name
 
             #: Role name
             name = Column(String, unique=True, nullable=False)
+
+            users = association_proxy('role_users', 'user')
 
         self.role_class = Role
 
     def _generate_relationships(self):
         class RolePermission(object):
             """Mixin to use on a RolePermission class, which is a linking table for Role-Permission relationship"""
-            role_id = Column(Integer, ForeignKey('role.id'), primary_key=True)
-            permission_id = Column(Integer, ForeignKey('permission.id'), primary_key=True)
+            __tablename__ = self.role_permission_table_name
+
+            role_id = Column(Integer, ForeignKey(self.role_class.id), primary_key=True)
+            permission_id = Column(Integer, ForeignKey(self.permission_class.id), primary_key=True)
 
         self.role_permission_class = RolePermission
 
         class UserRole(object):
             """Mixin to use on a UserRole class, which is a linking table for User-Role relationship"""
-            pass
+            __tablename__ = self.user_role_table_name
+
+            user_id = Column(Integer, ForeignKey(self.user_class.id), primary_key=True)
+            role_id = Column(Integer, ForeignKey(self.role_class.id), primary_key=True)
+
+            user = relationship(self.user_class, backref=backref('user_roles'))
+            role = relationship(self.role_class, backref=backref('role_users'))
 
         self.user_role_class = UserRole
 

@@ -1,4 +1,3 @@
-from sqlalchemy.sql.sqltypes import String as SqlString
 from sqlalchemy import Column, String
 
 
@@ -10,7 +9,7 @@ def test_user_class(decl_base, mixins):
 
     assert hasattr(User, 'id')
     assert hasattr(User, '__tablename__')
-    assert User.__tablename__ == 'user'
+    assert User.__tablename__ == 'users'
 
 
 def test_user_mixin_id_prop_is_overridden(decl_base, mixins):
@@ -31,7 +30,7 @@ def test_permission_class(decl_base, mixins):
 
     assert hasattr(Permission, 'id')
     assert hasattr(Permission, '__tablename__')
-    assert Permission.__tablename__ == 'permission'
+    assert Permission.__tablename__ == 'permissions'
 
 
 def test_role_class(decl_base, mixins):
@@ -42,7 +41,7 @@ def test_role_class(decl_base, mixins):
 
     assert hasattr(Role, 'id')
     assert hasattr(Role, '__tablename__')
-    assert Role.__tablename__ == 'role'
+    assert Role.__tablename__ == 'roles'
 
 
 def test_unit_class(decl_base, mixins):
@@ -53,4 +52,4 @@ def test_unit_class(decl_base, mixins):
 
     assert hasattr(Unit, 'id')
     assert hasattr(Unit, '__tablename__')
-    assert Unit.__tablename__ == 'unit'
+    assert Unit.__tablename__ == 'units'
