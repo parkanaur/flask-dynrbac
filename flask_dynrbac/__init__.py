@@ -1,4 +1,4 @@
-from . import util
+from . import exc, mixins
 
 from functools import wraps
 import warnings
@@ -60,20 +60,20 @@ class DynRBAC(object):
         if app.extensions.get('sqlalchemy') is None:
             warnings.warn('Flask-SQLAlchemy is not initialized before DynRBAC. '
                           'DynRBAC requires SQLAlchemy for role and permission data '
-                          'management.', util.DynRBACInitWarning)
+                          'management.', exc.DynRBACInitWarning)
 
         if self.role_class is None:
             warnings.warn('Role class is not supplied. It is required for proper functioning of this'
-                          'extension. RoleMixin is available for quicker development.', util.DynRBACInitWarning)
+                          'extension. RoleMixin is available for quicker development.', exc.DynRBACInitWarning)
 
         if self.permission_class is None:
             warnings.warn('Permission class is not supplied. It is required for proper functioning of '
                           'this extension. PermissionMixin is available for quicker development.',
-                          util.DynRBACInitWarning)
+                          exc.DynRBACInitWarning)
 
         if self.user_class is None:
             warnings.warn('User class is not supplied. It is required for proper functioning of this'
-                          'extension. UserMixin is available for quicker development.', util.DynRBACInitWarning)
+                          'extension. UserMixin is available for quicker development.', exc.DynRBACInitWarning)
 
     def rbac(self, unit_name=None, check_hierarchy=False, error_code=None):
         """ Restricts access to a function based on a role/permission list.

@@ -26,12 +26,12 @@ def test_warn_without_sqlalchemy():
 
     app = Flask(__name__)
 
-    with pytest.warns(fd.util.DynRBACInitWarning):
+    with pytest.warns(fd.exc.DynRBACInitWarning):
         fd.DynRBAC(app)
 
 
 def test_warn_without_entity_classes(app):
     """Should throw a warning if role/permission/user classes are not supplied during initialization"""
 
-    with pytest.warns(fd.util.DynRBACInitWarning):
+    with pytest.warns(fd.exc.DynRBACInitWarning):
         fd.DynRBAC(app)

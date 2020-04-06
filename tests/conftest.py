@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_dynrbac import DynRBAC
+from flask_dynrbac.mixins import MixinGenerator
 
 from collections import namedtuple
 
@@ -44,3 +45,8 @@ def inited_app(app, role_class, permission_class, user_class):
 def decl_base():
     db = SQLAlchemy()
     return db.Model
+
+
+@pytest.fixture
+def mixins():
+    return MixinGenerator()

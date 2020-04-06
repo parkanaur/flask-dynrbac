@@ -1,11 +1,11 @@
-import flask_dynrbac as fd
-from flask_dynrbac.util.mixins import *
+from sqlalchemy.sql.sqltypes import String as SqlString
+from sqlalchemy import Column, String
 
 
-def test_user_class(decl_base):
+def test_user_class(decl_base, mixins):
     """Should derive `User` class from mixin properly"""
 
-    class User(decl_base, UserMixin):
+    class User(decl_base, mixins.get_user_class()):
         pass
 
     assert hasattr(User, 'id')
@@ -13,10 +13,20 @@ def test_user_class(decl_base):
     assert User.__tablename__ == 'user'
 
 
-def test_permission_class(decl_base):
+def test_user_mixin_id_prop_is_overridden(decl_base, mixins):
+    """Should allow for pre-defined attributes to be overridden"""
+
+    class User(decl_base, mixins.get_user_class()):
+        id = Column(String, primary_key=True)
+
+    assert hasattr(User, 'id')
+    assert type(User.id.type) == String
+
+
+def test_permission_class(decl_base, mixins):
     """Should derive `Permission` class from mixin properly"""
 
-    class Permission(decl_base, PermissionMixin):
+    class Permission(decl_base, mixins.get_permission_class()):
         pass
 
     assert hasattr(Permission, 'id')
@@ -24,10 +34,10 @@ def test_permission_class(decl_base):
     assert Permission.__tablename__ == 'permission'
 
 
-def test_role_class(decl_base):
+def test_role_class(decl_base, mixins):
     """Should derive `Role` class from mixin properly"""
 
-    class Role(decl_base, UserMixin):
+    class Role(decl_base, mixins.get_role_class()):
         pass
 
     assert hasattr(Role, 'id')
@@ -35,10 +45,10 @@ def test_role_class(decl_base):
     assert Role.__tablename__ == 'role'
 
 
-def test_unit_class(decl_base):
+def test_unit_class(decl_base, mixins):
     """Should derive `Unit` class from mixin properly"""
 
-    class Unit(decl_base, UserMixin):
+    class Unit(decl_base, mixins.get_unit_class()):
         pass
 
     assert hasattr(Unit, 'id')
