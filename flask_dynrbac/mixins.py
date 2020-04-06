@@ -87,8 +87,13 @@ class MixinGenerator(object):
             """Mixin to use on a RolePermission class, which is a linking table for Role-Permission relationship"""
             __tablename__ = self.role_permission_table_name
 
-            role_id = Column(Integer, ForeignKey(self.role_class.id), primary_key=True)
-            permission_id = Column(Integer, ForeignKey(self.permission_class.id), primary_key=True)
+            @declared_attr
+            def role_id(self):
+                return Column(Integer, ForeignKey('role.id'), primary_key=True)
+
+            @declared_attr
+            def permission_id(self):
+                return Column(Integer, ForeignKey('permission.id'), primary_key=True)
 
         self.role_permission_class = RolePermission
 
@@ -96,11 +101,24 @@ class MixinGenerator(object):
             """Mixin to use on a UserRole class, which is a linking table for User-Role relationship"""
             __tablename__ = self.user_role_table_name
 
-            user_id = Column(Integer, ForeignKey(self.user_class.id), primary_key=True)
-            role_id = Column(Integer, ForeignKey(self.role_class.id), primary_key=True)
+            _user_cls = self.user_class
+            _role_cls = self.role_class
 
-            user = relationship(self.user_class, backref=backref('user_roles'))
-            role = relationship(self.role_class, backref=backref('role_users'))
+            @declared_attr
+            def user_id(self):
+                return Column(Integer, ForeignKey(self._user_cls.id), primary_key=True)
+
+            @declared_attr
+            def user(self):
+                return relationship(self._user_cls, backref=backref('user_roles'))
+
+            @declared_attr
+            def role_id(self):
+                return Column(Integer, ForeignKey(self._role_cls.id), primary_key=True)
+
+            @declared_attr
+            def role(self):
+                return relationship(self._role_cls, backref=backref('role_users'))
 
         self.user_role_class = UserRole
 
