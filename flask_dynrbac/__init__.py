@@ -20,6 +20,10 @@ class DynRBAC(object):
     :param role_class: Role entity class
     :param permission_class: Permission entity class
     :param user_class: User entity class
+    :param unit_class: Unit entity class
+    :param user_role_relationship: User-Role relationship class
+    :param role_permission_relationship: Role-Permission relationship class
+    :param unit_permission_relationship: Unit-Permission relationship class
     :param global_error_code: HTTP error code to return in case of permission mismatch. Defaults to 403 Forbidden
     :param unique_unit_names_only: If True, disallows repeating unit names during endpoint registration,
         i.e., there cannot be two functions with the same unit_name supplied to them. Setting this to True
@@ -28,15 +32,23 @@ class DynRBAC(object):
         :meth:`flask_dynrbac.DynRBAC.rbac`).
     """
 
-    def __init__(self, app=None, role_class=None, permission_class=None, user_class=None, global_error_code=403,
+    def __init__(self, app=None, role_class=None, permission_class=None, user_class=None, unit_class=None,
+                 user_role_relationship=None, role_permission_relationship=None, unit_permission_relationship=None,
+                 global_error_code=403,
                  unique_unit_names_only=False):
         """Initializes, configures and binds the extension instance to an app"""
         self.app = app
         self.global_error_code = global_error_code
+        self.unique_unit_names_only = unique_unit_names_only
+
         self.role_class = role_class
         self.permission_class = permission_class
         self.user_class = user_class
-        self.unique_unit_names_only = unique_unit_names_only
+        self.unit_class = unit_class
+
+        self.user_role_relationship = user_role_relationship
+        self.role_permission_relationship = role_permission_relationship
+        self.unit_permission_relationship = unit_permission_relationship
 
         #: Current endpoint collection
         self.registered_endpoints = {}
@@ -74,6 +86,10 @@ class DynRBAC(object):
         if self.user_class is None:
             warnings.warn('User class is not supplied. It is required for proper functioning of this'
                           'extension. UserMixin is available for quicker development.', exc.DynRBACInitWarning)
+
+        if self.unit_class is None:
+            warnings.warn('Unit class is not supplied. It is required for proper functioning of this'
+                          'extension. UnitMixin is available for quicker development.', exc.DynRBACInitWarning)
 
     def rbac(self, unit_name=None, check_hierarchy=False, error_code=None):
         """ Restricts access to a function based on a role/permission list.

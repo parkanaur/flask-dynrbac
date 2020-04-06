@@ -49,4 +49,5 @@ def decl_base():
 
 @pytest.fixture
 def mixins():
-    return MixinGenerator()
+    db = SQLAlchemy()
+    return MixinGenerator(db.Model)
