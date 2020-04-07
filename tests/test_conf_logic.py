@@ -3,7 +3,7 @@ import pytest
 
 def test_register_endpoints(inited_app):
     """Should register functions in internal dict"""
-    app, rbac = inited_app
+    app, db, rbac = inited_app
 
     @rbac.rbac(unit_name='name1')
     def x():
@@ -22,7 +22,7 @@ def test_register_endpoints(inited_app):
 
 def test_fail_register_same_unit_name(inited_app):
     """Should fail if the same unit name is already in dict"""
-    app, rbac = inited_app
+    app, db, rbac = inited_app
     rbac.unique_unit_names_only = True
     
     with pytest.raises(KeyError):

@@ -17,6 +17,8 @@ class DynRBAC(object):
     Mixins are available for quicker development.
 
     :param app: Flask app
+    :param session: SQLAlchemy session proxy. Use standard `sqlalchemy.orm.session` or Flask-SQLAlchemy's
+        `SQLAlchemy().session`.
     :param role_class: Role entity class
     :param permission_class: Permission entity class
     :param user_class: User entity class
@@ -32,7 +34,7 @@ class DynRBAC(object):
         :meth:`flask_dynrbac.DynRBAC.rbac`).
     """
 
-    def __init__(self, app=None, role_class=None, permission_class=None, user_class=None, unit_class=None,
+    def __init__(self, app=None, session=None, role_class=None, permission_class=None, user_class=None, unit_class=None,
                  user_role_relationship=None, role_permission_relationship=None, unit_permission_relationship=None,
                  global_error_code=403,
                  unique_unit_names_only=False):
@@ -40,6 +42,8 @@ class DynRBAC(object):
         self.app = app
         self.global_error_code = global_error_code
         self.unique_unit_names_only = unique_unit_names_only
+
+        self.session = session
 
         self.role_class = role_class
         self.permission_class = permission_class
@@ -73,6 +77,10 @@ class DynRBAC(object):
             warnings.warn('Flask-SQLAlchemy is not initialized before DynRBAC. '
                           'DynRBAC requires SQLAlchemy for role and permission data '
                           'management.', exc.DynRBACInitWarning)
+
+        if self.session is None:
+            warnings.warn('Session object is not supplied. It is required in order to make queries to'
+                          'the database. Set session via `DynRBAC.session` attribute.', exc.DynRBACInitWarning)
 
         if self.role_class is None:
             warnings.warn('Role class is not supplied. It is required for proper functioning of this'

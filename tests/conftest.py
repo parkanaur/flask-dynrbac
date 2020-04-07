@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_dynrbac import DynRBAC
 from flask_dynrbac.mixins import MixinGenerator
+from flask_dynrbac.testing_domain_model import *
 
 from collections import namedtuple
 
@@ -9,14 +10,14 @@ import pytest
 
 
 @pytest.fixture
-def app():
+def flask_app_with_db():
     app = Flask(__name__)
     app.testing = True
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db = SQLAlchemy(app)
 
-    return app
+    return app, db
 
 
 @pytest.fixture
@@ -35,10 +36,16 @@ def user_class():
 
 
 @pytest.fixture
-def inited_app(app, role_class, permission_class, user_class):
-    rbac = DynRBAC(app, role_class, permission_class, user_class)
+def unit_class():
+    return namedtuple('Unit', 'id name')
 
-    return app, rbac
+
+@pytest.fixture
+def inited_app(flask_app_with_db):
+    app, db = flask_app_with_db
+    rbac = DynRBAC(app, db.session, role_class=Role, permission_class=Permission, user_class=User, unit_class=Unit)
+
+    return app, db, rbac
 
 
 @pytest.fixture
