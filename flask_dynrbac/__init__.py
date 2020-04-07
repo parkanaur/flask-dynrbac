@@ -19,6 +19,9 @@ class DynRBAC(object):
     :param app: Flask app
     :param session: SQLAlchemy session proxy. Use standard `sqlalchemy.orm.session` or Flask-SQLAlchemy's
         `SQLAlchemy().session`.
+    :param user_id_provider: A callable which returns an ID of a current logged in user, e.g.
+        Flask-Login's `current_user` (`lambda: return current_user.id`) or Flask's `session` directly:
+        `lambda: return session['uid']`.
     :param role_class: Role entity class
     :param permission_class: Permission entity class
     :param user_class: User entity class
@@ -34,7 +37,7 @@ class DynRBAC(object):
         :meth:`flask_dynrbac.DynRBAC.rbac`).
     """
 
-    def __init__(self, app=None, session=None, role_class=None, permission_class=None, user_class=None, unit_class=None,
+    def __init__(self, app=None, session=None, user_id_provider=None, role_class=None, permission_class=None, user_class=None, unit_class=None,
                  user_role_relationship=None, role_permission_relationship=None, unit_permission_relationship=None,
                  global_error_code=403,
                  unique_unit_names_only=False):
@@ -44,6 +47,7 @@ class DynRBAC(object):
         self.unique_unit_names_only = unique_unit_names_only
 
         self.session = session
+        self.user_id_provider = user_id_provider
 
         self.role_class = role_class
         self.permission_class = permission_class
@@ -82,6 +86,10 @@ class DynRBAC(object):
             warnings.warn('Session object is not supplied. It is required in order to make queries to'
                           'the database. Set session via `DynRBAC.session` attribute.', exc.DynRBACInitWarning)
 
+        if self.user_id_provider is None:
+            warnings.warn('User ID provider callable is not supplied. It is required in order to make queries to'
+                          'the database. Set via `DynRBAC.session` attribute.', exc.DynRBACInitWarning)
+
         if self.role_class is None:
             warnings.warn('Role class is not supplied. It is required for proper functioning of this'
                           'extension. RoleMixin is available for quicker development.', exc.DynRBACInitWarning)
@@ -119,6 +127,8 @@ class DynRBAC(object):
                                'a provided default (func.__module__ + "_" + func.__name__'.format(unit=unit))
 
             self.registered_endpoints[unit] = func
+
+
 
             @wraps(func)
             def wrapper(*args, **kwargs):
