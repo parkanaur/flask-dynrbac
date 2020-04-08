@@ -1,15 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_dynrbac import DynRBAC
-from flask_dynrbac.mixins import MixinGenerator
-from flask_dynrbac.testing_domain_model import *
+from flask_dynrbac.domain_model_generator import DomainModelGenerator
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
-from collections import namedtuple
-
-import pytest
+try:
+    from db_setups import *
+except ImportError:
+    from .db_setups import *
 
 
 @pytest.fixture
@@ -18,56 +16,48 @@ def flask_app_with_db():
     app.testing = True
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ECHO'] = False
     db = SQLAlchemy(app)
 
     return app, db
 
 
 @pytest.fixture
-def role_class():
-    return namedtuple('Role', 'id name parent_id permissions')
-
-
-@pytest.fixture
-def permission_class():
-    return namedtuple('Permission', 'id name')
-
-
-@pytest.fixture
-def user_class():
-    return namedtuple('User', 'id name roles')
-
-
-@pytest.fixture
-def unit_class():
-    return namedtuple('Unit', 'id name')
-
-
-@pytest.fixture
 def inited_app(flask_app_with_db):
     app, db = flask_app_with_db
-    rbac = DynRBAC(app, db.session, lambda: 1, role_class=Role, permission_class=Permission, user_class=User,
-                   unit_class=Unit)
+    dmg = DomainModelGenerator(db.Model)
+    db.create_all()
+    rbac = DynRBAC(app, db.session, lambda: 1, role_class=dmg.Role, permission_class=dmg.Permission,
+                   user_class=dmg.User, unit_class=dmg.Unit)
 
-    return app, db, rbac
-
-
-@pytest.fixture
-def decl_base():
-    db = SQLAlchemy()
-    return db.Model
+    return app, db, rbac, dmg
 
 
 @pytest.fixture
-def mixins():
-    db = SQLAlchemy()
-    return MixinGenerator(db.Model)
+def app(inited_app):
+    app, db, rbac, dmg = inited_app
+    return app
 
 
 @pytest.fixture
-def session():
-    engine = create_engine('sqlite:///:memory:')
-    test_base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
+def db(inited_app):
+    app, db, rbac, dmg = inited_app
+    return db
 
-    return Session()
+
+@pytest.fixture
+def rbac(inited_app):
+    app, db, rbac, dmg = inited_app
+    return rbac
+
+
+@pytest.fixture
+def dmg(inited_app):
+    app, db, rbac, dmg = inited_app
+    return dmg
+
+
+@pytest.fixture
+def session(db):
+    return db.session
+

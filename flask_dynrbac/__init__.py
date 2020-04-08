@@ -1,4 +1,4 @@
-from . import exc, mixins
+from . import exc
 
 from functools import wraps
 import warnings
@@ -137,3 +137,15 @@ class DynRBAC(object):
             return wrapper
 
         return decorator
+
+    def get_all_roles(self):
+        return self.session.query(self.role_class).all()
+
+    def get_all_permissions(self):
+        return self.session.query(self.permission_class).all()
+
+    def get_all_users(self):
+        return self.session.query(self.user_class).all()
+
+    def get_all_units(self):
+        return self.session.query(self.unit_class).all()
