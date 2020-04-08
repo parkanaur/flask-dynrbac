@@ -15,6 +15,9 @@ class User(test_base):
 
     roles = relationship('Role', secondary='user_roles', backref='users')
 
+    def __repr__(self):
+        return "<User: " + str(self.id) + " " + self.name + ">"
+
 
 class Unit(test_base):
     __tablename__ = 'units'
@@ -24,12 +27,18 @@ class Unit(test_base):
 
     permissions = relationship('Permission', secondary='unit_permissions', backref='units')
 
+    def __repr__(self):
+        return "<User: " + str(self.id) + " " + self.name + ">"
+
 
 class Permission(test_base):
     __tablename__ = 'permissions'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
+
+    def __repr__(self):
+        return "<User: " + str(self.id) + " " + self.name + ">"
 
 
 class Role(test_base):
@@ -39,6 +48,9 @@ class Role(test_base):
     name = Column(String, unique=True, nullable=False)
 
     permissions = relationship('Permission', secondary='role_permissions', backref='roles')
+
+    def __repr__(self):
+        return "<User: " + str(self.id) + " " + self.name + ">"
 
 
 class UserRole(test_base):

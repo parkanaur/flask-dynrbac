@@ -94,7 +94,24 @@ def test_unit_permission_relationship(session):
     db_permission1 = session.query(Permission).filter(Permission.id == perm1.id).first()
     assert db_permission1 is not None
     assert db_permission1.units is not None
-    assert db_permission1.units[0].name == 'u1'
-    assert db_permission1.units[1].name == 'u2'
+    assert len(db_permission1.units) == 2
 
+
+def test_full_relationships_and_deletes(session):
+    """Should properly handle complex relationships, including deletes"""
+    role1 = Role(name='r1')
+    perm1 = Permission(name='p1')
+    perm2 = Permission(name='p2')
+    role1.permissions.extend((perm1, perm2))
+
+    user1 = User(name='u1')
+    user1.roles.append(role1)
+
+    session.add(user1)
+    session.commit()
+
+    db_user1 = session.query(User).filter(User.id == user1.id).first()
+    assert db_user1 is not None
+    assert len(db_user1.roles) == 1
+    assert len(db_user1.roles[0].permissions) == 2
 
