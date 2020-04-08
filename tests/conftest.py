@@ -4,6 +4,9 @@ from flask_dynrbac import DynRBAC
 from flask_dynrbac.mixins import MixinGenerator
 from flask_dynrbac.testing_domain_model import *
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from collections import namedtuple
 
 import pytest
@@ -43,7 +46,8 @@ def unit_class():
 @pytest.fixture
 def inited_app(flask_app_with_db):
     app, db = flask_app_with_db
-    rbac = DynRBAC(app, db.session, role_class=Role, permission_class=Permission, user_class=User, unit_class=Unit)
+    rbac = DynRBAC(app, db.session, lambda: 1, role_class=Role, permission_class=Permission, user_class=User,
+                   unit_class=Unit)
 
     return app, db, rbac
 
@@ -58,3 +62,12 @@ def decl_base():
 def mixins():
     db = SQLAlchemy()
     return MixinGenerator(db.Model)
+
+
+@pytest.fixture
+def session():
+    engine = create_engine('sqlite:///:memory:')
+    test_base.metadata.create_all(engine)
+    Session = sessionmaker(bind=engine)
+
+    return Session()

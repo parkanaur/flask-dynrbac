@@ -48,28 +48,28 @@ class UserRole(test_base):
     __tablename__ = 'user_roles'
 
     user_id = Column(Integer, ForeignKey(User.id), primary_key=True)
-    user = relationship(User, backref=backref('user_roles'))
+    user = relationship(User)
 
     role_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
-    role = relationship(Role, backref=backref('role_users'))
+    role = relationship(Role)
 
 
 class UnitPermission(test_base):
     __tablename__ = 'unit_permissions'
 
     unit_id = Column(Integer, ForeignKey(Unit.id), primary_key=True)
-    unit = relationship(Unit, backref=backref('unit_permissions'))
+    unit = relationship(Unit)
 
     permission_id = Column(Integer, ForeignKey(Permission.id), primary_key=True)
-    permission = relationship(Permission, backref=backref('permission_units'))
+    permission = relationship(Permission)
 
 
 class RolePermission(test_base):
     __tablename__ = 'role_permissions'
 
     role_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
-    role = relationship(Role, backref=backref('role_users'))
+    role = relationship(Role)
 
     permission_id = Column(Integer, ForeignKey(Permission.id), primary_key=True)
-    permission = relationship(Permission, backref=backref('permission_units'))
+    permission = relationship(Permission)
 

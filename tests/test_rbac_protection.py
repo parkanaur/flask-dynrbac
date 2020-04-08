@@ -13,6 +13,6 @@ def test_no_restrictions(inited_app):
     with app.test_client() as client:
         with app.app_context():
             a = client.get('/')
-            assert 'Hello World!' in a.data
+            assert b'Hello World!' in a.data
 
 
