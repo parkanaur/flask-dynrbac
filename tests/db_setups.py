@@ -30,6 +30,19 @@ def sample_filled_app(app, db, rbac, dmg):
         dmg.Permission(name='can_r4'),
         dmg.Permission(name='can_admin')
     ]
+    units = [
+        dmg.Unit(name='unit1'),
+        dmg.Unit(name='unit2'),
+        dmg.Unit(name='unit3'),
+        dmg.Unit(name='unit4'),
+        dmg.Unit(name='unit_admin'),
+    ]
+
+    permissions[0].units.append(units[0])
+    permissions[1].units.append(units[1])
+    permissions[2].units.append(units[2])
+    permissions[3].units.append(units[3])
+    permissions[4].units.append(units[4])
 
     roles[0].users.extend((users[0], users[1], users[3], users[4], users[-3]))
     roles[0].permissions.append(permissions[0])
@@ -50,7 +63,7 @@ def sample_filled_app(app, db, rbac, dmg):
 
     db.session.commit()
 
-    return app, db, rbac
+    return app, db, rbac, dmg
 
 
 
