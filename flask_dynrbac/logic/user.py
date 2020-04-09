@@ -1,4 +1,6 @@
-class UserLogic:
+from .base import BaseLogic
+
+
+class UserLogic(BaseLogic):
     def __init__(self, user_class, session):
-        self.User = user_class
-        self.session = session
+        super(UserLogic, self).__init__(user_class, session)

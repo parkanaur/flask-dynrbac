@@ -1,4 +1,5 @@
 from . import exc
+from .logic import UserLogic, UnitLogic, PermissionLogic, RoleLogic
 
 from functools import wraps
 import warnings
@@ -63,6 +64,11 @@ class DynRBAC(object):
 
         #: Current endpoint collection
         self.registered_endpoints = {}
+
+        self._user_logic = UserLogic(self.user_class, self.session)
+        self._role_logic = RoleLogic(self.role_class, self.session)
+        self._permission_logic = PermissionLogic(self.permission_class, self.session)
+        self._unit_logic = UnitLogic(self.unit_class, self.session)
 
         if app is not None:
             self.init_app(app)
