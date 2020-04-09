@@ -67,7 +67,8 @@ class DynRBAC(object):
         #: Current endpoint collection
         self.registered_endpoints = {}
 
-        self._user_logic = UserLogic(self.user_class, self.session)
+        self._user_logic = UserLogic(self.user_class, self.permission_class, self.role_class,
+                                     self.unit_class, self.session)
         self._role_logic = RoleLogic(self.role_class, self.session)
         self._permission_logic = PermissionLogic(self.permission_class, self.session)
         self._unit_logic = UnitLogic(self.unit_class, self.session)
@@ -142,7 +143,7 @@ class DynRBAC(object):
                 if not self._unit_logic.is_unit_in_db(unit) and self.create_missing_units:
                     self._unit_logic.add_to_db(unit)
 
-            if not self._user_logic.has_unit_permission(unit):
+            if not self._user_logic.has_unit_permission(self.user_id_provider(), unit):
                 return abort(err_code)
 
             @wraps(func)
