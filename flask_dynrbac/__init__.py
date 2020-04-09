@@ -137,6 +137,8 @@ class DynRBAC(object):
                                    'a provided default (func.__module__ + "_" + func.__name__'.format(unit=unit))
             else:
                 self.registered_endpoints[unit] = func
+                if not self._unit_logic.is_unit_in_db(unit) and self.create_missing_units:
+                    self._unit_logic.add_to_db(unit)
 
             @wraps(func)
             def wrapper(*args, **kwargs):
@@ -154,13 +156,13 @@ class DynRBAC(object):
         current_user = self.user_id_provider()
 
     def get_all_roles(self):
-        return self.session.query(self.role_class).all()
+        return self._role_logic.get_all()
 
     def get_all_permissions(self):
-        return self.session.query(self.permission_class).all()
+        return self._permission_logic.get_all()
 
     def get_all_users(self):
-        return self.session.query(self.user_class).all()
+        return self._user_logic.get_all()
 
     def get_all_units(self):
-        return self.session.query(self.unit_class).all()
+        return self._unit_logic.get_all()
