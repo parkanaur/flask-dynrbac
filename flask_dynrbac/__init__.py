@@ -1,6 +1,8 @@
 from . import exc
 from .logic import UserLogic, UnitLogic, PermissionLogic, RoleLogic
 
+from flask import abort
+
 from functools import wraps
 import warnings
 
@@ -128,7 +130,7 @@ class DynRBAC(object):
             """
 
         def decorator(func):
-            err = error_code or self.global_error_code
+            err_code = error_code or self.global_error_code
             unit = unit_name or '{module}_{name}'.format(module=func.__module__, name=func.__name__)
 
             if unit in self.registered_endpoints:
@@ -140,6 +142,9 @@ class DynRBAC(object):
                 if not self._unit_logic.is_unit_in_db(unit) and self.create_missing_units:
                     self._unit_logic.add_to_db(unit)
 
+            if not self._user_logic.has_unit_permission(unit):
+                return abort(err_code)
+
             @wraps(func)
             def wrapper(*args, **kwargs):
                 return func(*args, **kwargs)
@@ -147,13 +152,6 @@ class DynRBAC(object):
             return wrapper
 
         return decorator
-
-    def _add_missing_unit(self, unit_name):
-        self.session.add(self.unit_class(name=unit_name))
-        self.session.commit()
-
-    def _has_user_permission(self, unit_name):
-        current_user = self.user_id_provider()
 
     def get_all_roles(self):
         return self._role_logic.get_all()

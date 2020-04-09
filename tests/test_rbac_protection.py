@@ -41,7 +41,7 @@ def test_role_1(sample_filled_app):
         assert r.status_code == 200
         assert b'Hello World!' in r.data
 
-    # for i in users_other_ids:
-    #     current_user_id = i
-    #     r = _send_request(app, '/')
-    #     assert r.status_code == rbac.global_error_code
+    for i in users_other_ids:
+        current_user_id = i
+        r = _send_request(app, '/')
+        assert r.status_code == rbac.global_error_code
