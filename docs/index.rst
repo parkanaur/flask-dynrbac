@@ -33,31 +33,33 @@ All the work is done by the :meth:`flask_dynrbac.DynRBAC.rbac` decorator.
 .. automodule:: flask_dynrbac
    :members:
 
-.. automodule:: flask_dynrbac.util
+.. automodule:: flask_dynrbac.exc
    :members:
 
-Mixins
-======
+Domain Model generation
+=======================
 
-You can use mixins in order to expand or create new entity classes that
-fit into your domain model. Alternatively, you can simply copy and paste
-the mixins' source code into your classes.
+You can use :class:`flask_dynrbac.domain_model_generator.DomainModelGenerator` in order to expand
+or create new entity classes that fit into your domain model.
+Alternatively, you can simply copy and paste
+the domain models' source code into your classes.
 
-All mixins derive from :class:`flask_dynrbac.util.mixins.EntityBase` class,
-which contains ``ID`` and ``tablename`` attributes.
+In order to use a default domain model, create an instance of `DomainModelGenerator`
+with declarative base as a constructor argument (SQLAlchemy's `declarative_base` or
+Flask-SQLAlchemy's `SQLAlchemy.model`)::
 
-In order to use a mixin, derive your entity class both from a mixin and
-SQLAlchemy's model class (e.g. `declarative_base` or flask-sqlalchemy's `Model`)::
-
+   from flask import Flask
    from flask_sqlalchemy import SQLAlchemy
-   from flask_dynrbac.util.mixins import *
+   from flask_dynrbac.domain_model_generator import DomainModelGenerator
 
+   app = Flask(__name__)
    db = SQLAlchemy(app)
 
-   class Role(db.Model, RoleMixin):
-      pass
+   dmg = DomainModelGenerator(db.Model)
 
-.. automodule:: flask_dynrbac.util.mixins
+   # Use dmg.User, dmg.Permission, dmg.Role classes...
+
+.. automodule:: flask_dynrbac.domain_model_generator
    :members:
 
 Pluggable API

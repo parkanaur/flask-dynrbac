@@ -5,6 +5,15 @@ from sqlalchemy.ext.associationproxy import association_proxy
 
 
 class DomainModelGenerator:
+    """A class which will generate domain model classes which can be used directly
+       or expanded upon.
+
+       Alternatively, the source code of domain model classes can be copied
+       and pasted into the project's existing codebase.
+
+       :param base: base SQLAlchemy class for entities (e.g. `declarative_base` or
+           `db.Model` for flask-sqlalchemy)
+       """
     def __init__(self, base):
         self.base = base
 
@@ -77,10 +86,17 @@ class DomainModelGenerator:
             permission_id = Column(Integer, ForeignKey(Permission.id), primary_key=True)
             permission = relationship('Permission', backref=backref('role_permissions', passive_deletes='all'))
 
+        #: User domain model class
         self.User = User
+        #: Role domain model class
         self.Role = Role
+        #: Permission domain model class
         self.Permission = Permission
+        #: Unit domain model class
         self.Unit = Unit
+        #: Unit-Permission relationship class (association object)
         self.UnitPermission = UnitPermission
+        #: User-Role relationship class (association object)
         self.UserRole = UserRole
+        #: Role-Permission relationship class (association object)
         self.RolePermission = RolePermission

@@ -35,12 +35,13 @@ class DynRBAC(object):
         will require additional precautionary measures if your app has modules with repeating names (and with route
         definitions in those modules) and if you leave unit_name parameters blank (see default unit_name in
         :meth:`flask_dynrbac.DynRBAC.rbac`).
+    :param create_missing_units: If True, will create missing units in the database during permission checks.
     """
 
     def __init__(self, app=None, session=None, user_id_provider=None, role_class=None, permission_class=None, user_class=None, unit_class=None,
                  user_role_relationship=None, role_permission_relationship=None, unit_permission_relationship=None,
                  global_error_code=403,
-                 unique_unit_names_only=False):
+                 unique_unit_names_only=False, create_missing_units=True):
         """Initializes, configures and binds the extension instance to an app"""
         self.app = app
         self.global_error_code = global_error_code
@@ -57,6 +58,8 @@ class DynRBAC(object):
         self.user_role_relationship = user_role_relationship
         self.role_permission_relationship = role_permission_relationship
         self.unit_permission_relationship = unit_permission_relationship
+
+        self.create_missing_units = create_missing_units
 
         #: Current endpoint collection
         self.registered_endpoints = {}
@@ -122,13 +125,12 @@ class DynRBAC(object):
             err = error_code or self.global_error_code
             unit = unit_name or '{module}_{name}'.format(module=func.__module__, name=func.__name__)
 
-            if unit in self.registered_endpoints and self.unique_unit_names_only:
-                raise KeyError('Unit {unit} is already registered in the extension. Change its name or use '
-                               'a provided default (func.__module__ + "_" + func.__name__'.format(unit=unit))
-
-            self.registered_endpoints[unit] = func
-
-
+            if unit in self.registered_endpoints:
+                if self.unique_unit_names_only:
+                    raise KeyError('Unit {unit} is already registered in the extension. Change its name or use '
+                                   'a provided default (func.__module__ + "_" + func.__name__'.format(unit=unit))
+            else:
+                self.registered_endpoints[unit] = func
 
             @wraps(func)
             def wrapper(*args, **kwargs):
@@ -137,6 +139,13 @@ class DynRBAC(object):
             return wrapper
 
         return decorator
+
+    def _add_missing_unit(self, unit_name):
+        self.session.add(self.unit_class(name=unit_name))
+        self.session.commit()
+
+    def _has_user_permission(self, unit_name):
+        current_user = self.user_id_provider()
 
     def get_all_roles(self):
         return self.session.query(self.role_class).all()

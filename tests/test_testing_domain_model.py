@@ -1,7 +1,3 @@
-import flask_dynrbac as fd
-from flask_dynrbac.testing_domain_model import *
-
-
 def test_addition(session, dmg):
     """Should add entities to db"""
     user = dmg.User()
