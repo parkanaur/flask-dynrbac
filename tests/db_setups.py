@@ -44,7 +44,7 @@ def sample_filled_app(app, db, rbac, dmg):
     permissions[3].units.append(units[3])
     permissions[4].units.append(units[4])
 
-    roles[0].users.extend((users[0], users[1], users[3], users[4], users[-3]))
+    roles[0].users.extend((users[0], users[1], users[3], users[-3]))
     roles[0].permissions.append(permissions[0])
     roles[1].users.extend((users[2], users[3], users[-3]))
     roles[1].permissions.append(permissions[1])

@@ -143,11 +143,10 @@ class DynRBAC(object):
                 if not self._unit_logic.is_unit_in_db(unit) and self.create_missing_units:
                     self._unit_logic.add_to_db(unit)
 
-            if not self._user_logic.has_unit_permission(self.user_id_provider(), unit):
-                return abort(err_code)
-
             @wraps(func)
             def wrapper(*args, **kwargs):
+                if not self._user_logic.has_unit_permission(self.user_id_provider(), unit):
+                    return abort(err_code)
                 return func(*args, **kwargs)
 
             return wrapper

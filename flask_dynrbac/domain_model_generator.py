@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -34,10 +34,12 @@ class DomainModelGenerator:
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True, nullable=False)
 
+            perms_all_required = Column(Boolean, nullable=False, default=False)
+
             permissions = relationship('Permission', secondary='unit_permissions', backref='units')
 
             def __repr__(self):
-                return "<User: " + str(self.id) + " " + self.name + ">"
+                return "<Unit: " + str(self.id) + " " + self.name + ">"
 
         class Permission(self.base):
             __tablename__ = 'permissions'
@@ -46,7 +48,7 @@ class DomainModelGenerator:
             name = Column(String, unique=True, nullable=False)
 
             def __repr__(self):
-                return "<User: " + str(self.id) + " " + self.name + ">"
+                return "<Permission: " + str(self.id) + " " + self.name + ">"
 
         class Role(self.base):
             __tablename__ = 'roles'
@@ -57,7 +59,7 @@ class DomainModelGenerator:
             permissions = relationship('Permission', secondary='role_permissions', backref='roles')
 
             def __repr__(self):
-                return "<User: " + str(self.id) + " " + self.name + ">"
+                return "<Role: " + str(self.id) + " " + self.name + ">"
 
         class UserRole(self.base):
             __tablename__ = 'user_roles'

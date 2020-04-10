@@ -13,6 +13,7 @@ class BaseLogic(object):
         mdl = self.session.query(self.Cls).filter(self.Cls.id == id).first()
         if mdl is None and raise_on_not_found:
             raise DynRBACNotFoundException('Entity {entity} with ID {id} has not been found.'
-                                           .format(entity=self.Cls.__class__.__name__, id=id))
+                                           .format(entity=self.Cls.__name__, id=id))
+        return mdl
 
 
