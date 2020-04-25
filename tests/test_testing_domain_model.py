@@ -115,8 +115,8 @@ def test_full_relationships_and_deletes(session, dmg):
 def test_hierarchy(session, dmg):
     """Should properly support role hierarchies"""
     role_parent = dmg.Role(name='parent_role')
-    role_child1 = dmg.Role(name='child1', parent=role_parent)
-    role_child2 = dmg.Role(name='child2', parent=role_parent)
+    role_child1 = dmg.Role(name='child1', parents=[role_parent])
+    role_child2 = dmg.Role(name='child2', parents=[role_parent])
     role_parent.children.append(dmg.Role(name='child3'))
 
     session.add_all([role_parent, role_child1, role_child2])
@@ -127,3 +127,5 @@ def test_hierarchy(session, dmg):
     assert len(added_parent.children) == 3
     assert set(map(lambda role: role.name, added_parent.children)).issubset(['child1', 'child2', 'child3'])
 
+    added_child1 = session.query(dmg.Role).filter(dmg.Role.name == 'child1').first()
+    assert added_child1.parents[0].name == added_parent.name

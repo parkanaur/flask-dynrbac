@@ -18,31 +18,31 @@ class DomainModelGenerator:
         self.base = base
 
         class User(self.base):
-            __tablename__ = 'users'
+            __tablename__ = 'user'
 
             id = Column(Integer, primary_key=True)
             name = Column(String)
 
-            roles = relationship('Role', secondary='user_roles', backref='users')
+            roles = relationship('Role', secondary='user_role', backref='users')
 
             def __repr__(self):
                 return "<User: " + str(self.id) + " " + self.name + ">"
 
         class Unit(self.base):
-            __tablename__ = 'units'
+            __tablename__ = 'unit'
 
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True, nullable=False)
 
             perms_all_required = Column(Boolean, nullable=False, default=False)
 
-            permissions = relationship('Permission', secondary='unit_permissions', backref='units')
+            permissions = relationship('Permission', secondary='unit_permission', backref='units')
 
             def __repr__(self):
                 return "<Unit: " + str(self.id) + " " + self.name + ">"
 
         class Permission(self.base):
-            __tablename__ = 'permissions'
+            __tablename__ = 'permission'
 
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True, nullable=False)
@@ -51,55 +51,58 @@ class DomainModelGenerator:
                 return "<Permission: " + str(self.id) + " " + self.name + ">"
 
         class Role(self.base):
-            __tablename__ = 'roles'
+            __tablename__ = 'role'
 
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True, nullable=False)
 
-            permissions = relationship('Permission', secondary='role_permissions', backref='roles')
-            # parents = relationship('Role', secondary='role_roles_hierarchy', backref='children')
+            permissions = relationship('Permission', secondary='role_permission', backref='roles')
+            parents = relationship('Role', secondary='role_role_hierarchy',
+                                   primaryjoin='Role.id == RoleHierarchy.child_id',
+                                   secondaryjoin='Role.id == RoleHierarchy.parent_id',
+                                   backref='children')
 
-            parent_id = Column(Integer, ForeignKey('roles.id'))
-            parent = relationship('Role', remote_side=[id], backref='children')
+            # parent_id = Column(Integer, ForeignKey('roles.id'))
+            # parent = relationship('Role', remote_side=[id], backref='children')
 
             def __repr__(self):
                 return "<Role: " + str(self.id) + " " + self.name + ">"
 
+        class RoleHierarchy(self.base):
+            __tablename__ = 'role_role_hierarchy'
+
+            parent_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
+            # parent = relationship('Role', foreign_keys=[parent_id], backref=backref('role_role_hierarchy', passive_deletes='all'))
+
+            child_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
+            # child = relationship('Role', foreign_keys=[child_id], backref=backref('role_role_hierarchy', passive_deletes='all'))
+
         class UserRole(self.base):
-            __tablename__ = 'user_roles'
+            __tablename__ = 'user_role'
 
             user_id = Column(Integer, ForeignKey(User.id), primary_key=True)
-            user = relationship('User', backref=backref('user_roles', passive_deletes='all'))
+            user = relationship('User', backref=backref('user_role', passive_deletes='all'))
 
             role_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
-            role = relationship('Role', backref=backref('user_roles', passive_deletes='all'))
-
-        # class RoleHierarchy(self.base):
-        #     __tablename__ = 'role_roles_hierarchy'
-        #
-        #     parent_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
-        #     parent = relationship('Role', backref=backref('role_roles_hierarchy'), passive_deletes='all')
-        #
-        #     child_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
-        #     child = relationship('Role', backref=backref('role_roles_hierarchy'), passive_deletes='all')
+            role = relationship('Role', backref=backref('user_role', passive_deletes='all'))
 
         class UnitPermission(self.base):
-            __tablename__ = 'unit_permissions'
+            __tablename__ = 'unit_permission'
 
             unit_id = Column(Integer, ForeignKey(Unit.id), primary_key=True)
-            unit = relationship('Unit', backref=backref('unit_permissions', passive_deletes='all'))
+            unit = relationship('Unit', backref=backref('unit_permission', passive_deletes='all'))
 
             permission_id = Column(Integer, ForeignKey(Permission.id), primary_key=True)
-            permission = relationship('Permission', backref=backref('unit_permissions', passive_deletes='all'))
+            permission = relationship('Permission', backref=backref('unit_permission', passive_deletes='all'))
 
         class RolePermission(self.base):
-            __tablename__ = 'role_permissions'
+            __tablename__ = 'role_permission'
 
             role_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
-            role = relationship('Role', backref=backref('role_permissions', passive_deletes='all'))
+            role = relationship('Role', backref=backref('role_permission', passive_deletes='all'))
 
             permission_id = Column(Integer, ForeignKey(Permission.id), primary_key=True)
-            permission = relationship('Permission', backref=backref('role_permissions', passive_deletes='all'))
+            permission = relationship('Permission', backref=backref('role_permission', passive_deletes='all'))
 
         #: User domain model class
         self.User = User
@@ -115,3 +118,5 @@ class DomainModelGenerator:
         self.UserRole = UserRole
         #: Role-Permission relationship class (association object)
         self.RolePermission = RolePermission
+        #: Role-Role many-to-many hierarchy relationship class (association object)
+        self.RoleHierarchy = RoleHierarchy
