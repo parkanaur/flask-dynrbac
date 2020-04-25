@@ -11,11 +11,6 @@ def test_no_restrictions(sample_filled_app):
     """Should allow requests with no rules on unit"""
     app, db, rbac, dmg = sample_filled_app
 
-    @app.route('/')
-    @rbac.rbac(unit_name='unit1')
-    def hello_world():
-        return 'Hello World!'
-
     r = _send_request(app, '/')
     assert r.status_code == 200
     assert b'Hello World!' in r.data
@@ -32,11 +27,6 @@ def test_role_1(sample_filled_app):
     users_r1_ids = {i for i in range(1, 11) if i in correct_users}
     users_other_ids = correct_users - users_r1_ids
 
-    @app.route('/')
-    @rbac.rbac(unit_name='unit1')
-    def hello_world():
-        return 'Hello World!'
-
     for i in users_r1_ids:
         current_user_id = i
         r = _send_request(app, '/')
@@ -47,3 +37,14 @@ def test_role_1(sample_filled_app):
         current_user_id = i
         r = _send_request(app, '/')
         assert r.status_code == rbac.global_error_code
+
+
+def test_all_access_to_admin(sample_filled_app):
+    app, db, rbac, dmg = sample_filled_app
+
+    rbac.user_id_provider = lambda: db.session.query(dmg.User).filter(dmg.User.name == 'user_admin').first().id
+
+    for un_name in ['unit1', 'unit2', 'unit3', 'unit4', 'unit_admin']:
+        r = _send_request(app, '/' + un_name)
+        assert r.status_code == 200, 'Fail + ' + un_name + ' for admin user'
+        assert b'Hello World!' in r.data

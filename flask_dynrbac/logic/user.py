@@ -3,19 +3,25 @@ from flask_dynrbac.exc import DynRBACNotFoundException
 
 
 class UserLogic(BaseLogic):
-    def __init__(self, user_class, permission_class, role_class, unit_class, session):
+    def __init__(self, user_class, permission_class, role_class, unit_class, session, role_logic):
         super(UserLogic, self).__init__(user_class, session)
         self.User = self.Cls
         self.Permission = permission_class
         self.Role = role_class
         self.Unit = unit_class
+        self._role_logic = role_logic
 
-    def get_user_roles(self, user_id):
+    def get_user_roles(self, user_id, with_children=True):
         user = self.get_by_id(user_id)
-        return user.roles
+        roles = user.roles
+        if with_children:
+            for i in range(len(roles)):
+                roles.extend(self._role_logic.get_whole_child_tree_inclusive(roles[i]))
 
-    def get_user_permissions(self, user_id):
-        roles = self.get_user_roles(user_id)
+        return roles
+
+    def get_user_permissions(self, user_id, with_children=True):
+        roles = self.get_user_roles(user_id, with_children)
         permissions = {}
         for role in roles:
             for perm in role.permissions:
@@ -25,9 +31,9 @@ class UserLogic(BaseLogic):
 
         return list(permissions.values())
 
-    def has_unit_permission(self, user_id, unit):
+    def has_unit_permission(self, user_id, unit, with_children=True):
         unit = self.session.query(self.Unit).filter(self.Unit.name == unit).first()
-        user_perms = set(map(lambda perm: perm.name, self.get_user_permissions(user_id)))
+        user_perms = set(map(lambda perm: perm.name, self.get_user_permissions(user_id, with_children)))
         unit_perms = set(map(lambda perm: perm.name, unit.permissions))
 
         ok_perms = len(unit_perms.intersection(user_perms))

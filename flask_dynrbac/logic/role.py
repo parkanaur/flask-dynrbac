@@ -12,3 +12,10 @@ class RoleLogic(BaseLogic):
             raise DynRBACNotFoundException('Entity {entity} with ID {id} has not been found.'
                                            .format(entity=self.Cls.__name__, id=id))
         return role.users
+
+    def get_whole_child_tree_inclusive(self, role):
+        children = [role]
+        for r in role.children:
+            children.extend(self.get_whole_child_tree_inclusive(r))
+
+        return children

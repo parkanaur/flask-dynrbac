@@ -67,9 +67,9 @@ class DynRBAC(object):
         #: Current endpoint collection
         self.registered_endpoints = {}
 
-        self._user_logic = UserLogic(self.user_class, self.permission_class, self.role_class,
-                                     self.unit_class, self.session)
         self._role_logic = RoleLogic(self.role_class, self.session)
+        self._user_logic = UserLogic(self.user_class, self.permission_class, self.role_class,
+                                     self.unit_class, self.session, self._role_logic)
         self._permission_logic = PermissionLogic(self.permission_class, self.session)
         self._unit_logic = UnitLogic(self.unit_class, self.session)
 
@@ -119,7 +119,7 @@ class DynRBAC(object):
             warnings.warn('Unit class is not supplied. It is required for proper functioning of this'
                           'extension. UnitMixin is available for quicker development.', exc.DynRBACInitWarning)
 
-    def rbac(self, unit_name=None, check_hierarchy=False, error_code=None):
+    def rbac(self, unit_name=None, check_hierarchy=True, error_code=None):
         """ Restricts access to a function based on a role/permission list.
             The list is retrieved from the app's database.
 
@@ -145,7 +145,8 @@ class DynRBAC(object):
 
             @wraps(func)
             def wrapper(*args, **kwargs):
-                if not self._user_logic.has_unit_permission(self.user_id_provider(), unit):
+                if not self._user_logic.has_unit_permission(self.user_id_provider(), unit,
+                                                            with_children=check_hierarchy):
                     return abort(err_code)
                 return func(*args, **kwargs)
 
