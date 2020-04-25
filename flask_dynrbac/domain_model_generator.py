@@ -57,6 +57,10 @@ class DomainModelGenerator:
             name = Column(String, unique=True, nullable=False)
 
             permissions = relationship('Permission', secondary='role_permissions', backref='roles')
+            # parents = relationship('Role', secondary='role_roles_hierarchy', backref='children')
+
+            parent_id = Column(Integer, ForeignKey('roles.id'))
+            parent = relationship('Role', remote_side=[id], backref='children')
 
             def __repr__(self):
                 return "<Role: " + str(self.id) + " " + self.name + ">"
@@ -69,6 +73,15 @@ class DomainModelGenerator:
 
             role_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
             role = relationship('Role', backref=backref('user_roles', passive_deletes='all'))
+
+        # class RoleHierarchy(self.base):
+        #     __tablename__ = 'role_roles_hierarchy'
+        #
+        #     parent_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
+        #     parent = relationship('Role', backref=backref('role_roles_hierarchy'), passive_deletes='all')
+        #
+        #     child_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
+        #     child = relationship('Role', backref=backref('role_roles_hierarchy'), passive_deletes='all')
 
         class UnitPermission(self.base):
             __tablename__ = 'unit_permissions'
