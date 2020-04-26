@@ -14,6 +14,7 @@ class DomainModelGenerator:
        :param base: base SQLAlchemy class for entities (e.g. `declarative_base` or
            `db.Model` for flask-sqlalchemy)
        """
+
     def __init__(self, base):
         self.base = base
 
@@ -57,10 +58,16 @@ class DomainModelGenerator:
             name = Column(String, unique=True, nullable=False)
 
             permissions = relationship('Permission', secondary='role_permission', backref='roles')
+
             parents = relationship('Role', secondary='role_role_hierarchy',
                                    primaryjoin='Role.id == RoleHierarchy.child_id',
                                    secondaryjoin='Role.id == RoleHierarchy.parent_id',
                                    backref='children')
+
+            incompatible_roles = relationship('Role', secondary='role_role_restriction',
+                                              primaryjoin='Role.id == RoleRestriction.incompat_role_id',
+                                              secondaryjoin='Role.id == RoleRestriction.role_id',
+                                              backref='roles_restricted_by_this_role')
 
             # parent_id = Column(Integer, ForeignKey('roles.id'))
             # parent = relationship('Role', remote_side=[id], backref='children')
@@ -72,10 +79,15 @@ class DomainModelGenerator:
             __tablename__ = 'role_role_hierarchy'
 
             parent_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
-            # parent = relationship('Role', foreign_keys=[parent_id], backref=backref('role_role_hierarchy', passive_deletes='all'))
 
             child_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
-            # child = relationship('Role', foreign_keys=[child_id], backref=backref('role_role_hierarchy', passive_deletes='all'))
+
+        class RoleRestriction(self.base):
+            __tablename__ = 'role_role_restriction'
+
+            role_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
+
+            incompat_role_id = Column(Integer, ForeignKey(Role.id), primary_key=True)
 
         class UserRole(self.base):
             __tablename__ = 'user_role'
@@ -120,3 +132,5 @@ class DomainModelGenerator:
         self.RolePermission = RolePermission
         #: Role-Role many-to-many hierarchy relationship class (association object)
         self.RoleHierarchy = RoleHierarchy
+        #: Role-Role incompatible roles relationship class (association object)
+        self.RoleRestriction = RoleRestriction
