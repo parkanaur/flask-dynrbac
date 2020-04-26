@@ -1,7 +1,7 @@
-from .permission_blueprint import PermissionApi, PermissionListApi
-from .role_blueprint import RoleApi, RoleListApi
-from .unit_blueprint import UnitApi, UnitListApi
-from .user_blueprint import UserApi, UserListApi
+from .permission_api import PermissionApi, PermissionListApi
+from .role_api import RoleApi, RoleListApi
+from .unit_api import UnitApi, UnitListApi
+from .user_api import UserApi, UserListApi
 
 from flask_restful import Api
 

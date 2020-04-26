@@ -29,6 +29,11 @@ class DomainModelGenerator:
             def __repr__(self):
                 return "<User: " + str(self.id) + " " + self.name + ">"
 
+            def to_dict(self):
+                return {'id': self.id,
+                        'name': self.name,
+                        'roles': [{'id': role.id, 'name': role.name} for role in self.roles]}
+
         class Unit(self.base):
             __tablename__ = 'unit'
 
@@ -41,6 +46,12 @@ class DomainModelGenerator:
 
             def __repr__(self):
                 return "<Unit: " + str(self.id) + " " + self.name + ">"
+
+            def to_json(self):
+                return {'id': self.id,
+                        'name': self.name,
+                        'perms_all_required': self.perms_all_required,
+                        'permissions': self.permissions}
 
         class Permission(self.base):
             __tablename__ = 'permission'
@@ -68,9 +79,6 @@ class DomainModelGenerator:
                                               primaryjoin='Role.id == RoleRestriction.incompat_role_id',
                                               secondaryjoin='Role.id == RoleRestriction.role_id',
                                               backref='roles_restricted_by_this_role')
-
-            # parent_id = Column(Integer, ForeignKey('roles.id'))
-            # parent = relationship('Role', remote_side=[id], backref='children')
 
             def __repr__(self):
                 return "<Role: " + str(self.id) + " " + self.name + ">"

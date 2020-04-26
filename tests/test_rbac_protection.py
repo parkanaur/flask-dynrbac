@@ -1,14 +1,12 @@
 import flask_dynrbac as fd
-from helpers import send_request
+from helpers import send_request, send_and_assert
 
 
 def test_no_restrictions(sample_filled_app):
     """Should allow requests with no rules on unit"""
     app, db, rbac, dmg = sample_filled_app
 
-    r = send_request(app, '/')
-    assert r.status_code == 200
-    assert b'Hello World!' in r.data
+    r = send_and_assert(app, '/')
 
 
 def test_role_1(sample_filled_app):
@@ -18,7 +16,7 @@ def test_role_1(sample_filled_app):
     current_user_id = None
     rbac.user_id_provider = lambda: current_user_id
 
-    correct_users = set(map(lambda user: user.id, rbac._role_logic.get_all_users_for_role('role1')))
+    correct_users = set(map(lambda user: user.id, rbac.role_logic.get_all_users_for_role('role1')))
     users_r1_ids = {i for i in range(1, 11) if i in correct_users}
     users_other_ids = correct_users - users_r1_ids
 

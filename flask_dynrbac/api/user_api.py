@@ -1,4 +1,9 @@
 from flask_restful import Resource
+from flask import current_app
+
+
+def _ul():
+    return current_app.rbac.user_logic
 
 
 class UserApi(Resource):
@@ -14,7 +19,7 @@ class UserApi(Resource):
 
 class UserListApi(Resource):
     def get(self):
-        return 'get_user_list'
+        return [user.to_dict() for user in _ul().get_all()]
 
     def post(self):
         return 'post_user_list'

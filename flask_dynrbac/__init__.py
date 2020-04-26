@@ -67,11 +67,11 @@ class DynRBAC(object):
         #: Current endpoint collection
         self.registered_endpoints = {}
 
-        self._role_logic = RoleLogic(self.role_class, self.session)
-        self._user_logic = UserLogic(self.user_class, self.permission_class, self.role_class,
-                                     self.unit_class, self.session, self._role_logic)
-        self._permission_logic = PermissionLogic(self.permission_class, self.session)
-        self._unit_logic = UnitLogic(self.unit_class, self.session)
+        self.role_logic = RoleLogic(self.role_class, self.session)
+        self.user_logic = UserLogic(self.user_class, self.permission_class, self.role_class,
+                                    self.unit_class, self.session, self.role_logic)
+        self.permission_logic = PermissionLogic(self.permission_class, self.session)
+        self.unit_logic = UnitLogic(self.unit_class, self.session)
 
         if app is not None:
             self.init_app(app)
@@ -84,6 +84,7 @@ class DynRBAC(object):
         self._validate_requirements(app)
 
         app.extensions['dynrbac'] = self
+        app.rbac = self
 
     def _validate_requirements(self, app):
         """ Checks whether the supplied app fulfills the extension/domain model requirements.
@@ -140,13 +141,13 @@ class DynRBAC(object):
                                    'a provided default (func.__module__ + "_" + func.__name__'.format(unit=unit))
             else:
                 self.registered_endpoints[unit] = func
-                if not self._unit_logic.is_unit_in_db(unit) and self.create_missing_units:
-                    self._unit_logic.add_to_db(unit)
+                if not self.unit_logic.is_unit_in_db(unit) and self.create_missing_units:
+                    self.unit_logic.add_to_db(unit)
 
             @wraps(func)
             def wrapper(*args, **kwargs):
-                if not self._user_logic.has_unit_permission(self.user_id_provider(), unit,
-                                                            with_children=check_hierarchy):
+                if not self.user_logic.has_unit_permission(self.user_id_provider(), unit,
+                                                           with_children=check_hierarchy):
                     return abort(err_code)
                 return func(*args, **kwargs)
 
@@ -155,13 +156,13 @@ class DynRBAC(object):
         return decorator
 
     def get_all_roles(self):
-        return self._role_logic.get_all()
+        return self.role_logic.get_all()
 
     def get_all_permissions(self):
-        return self._permission_logic.get_all()
+        return self.permission_logic.get_all()
 
     def get_all_users(self):
-        return self._user_logic.get_all()
+        return self.user_logic.get_all()
 
     def get_all_units(self):
-        return self._unit_logic.get_all()
+        return self.unit_logic.get_all()
