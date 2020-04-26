@@ -43,3 +43,15 @@ class UserLogic(BaseLogic):
         else:
             return ok_perms >= 1
 
+    def update_user(self, user, **kwargs):
+        if 'name' in kwargs:
+            user.name = kwargs['name']
+        if 'update_roles' in kwargs and kwargs['update_roles'] and 'role_ids' in kwargs:
+            old_roles = set(user.roles)
+            new_roles = set(self.session.query(self.Role).filter(self.Role.id.in_(kwargs['role_ids'])).all())
+            user.roles.extend(new_roles - old_roles)
+            for role in old_roles - new_roles:
+                user.roles.remove(role)
+        self.session.add(user)
+        self.session.commit()
+

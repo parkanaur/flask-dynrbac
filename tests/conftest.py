@@ -26,9 +26,9 @@ def flask_app_with_db():
 @pytest.fixture
 def inited_app(flask_app_with_db):
     app, db = flask_app_with_db
-    api = generate_rbac_api(app)
     dmg = DomainModelGenerator(db.Model)
     db.create_all()
+    api = generate_rbac_api(app)
     rbac = DynRBAC(app, db.session, lambda: 1, role_class=dmg.Role, permission_class=dmg.Permission,
                    user_class=dmg.User, unit_class=dmg.Unit)
 

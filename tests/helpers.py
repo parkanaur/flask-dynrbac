@@ -1,7 +1,7 @@
-def send_request(app, url, method='get'):
+def send_request(app, url, method='get', json=None):
     with app.test_client() as client:
         with app.app_context():
-            return getattr(client, method)(url)
+            return getattr(client, method)(url, json=json)
 
 
 def send_and_assert(app, url, method='get', code=200, exp_string=b'Hello World!'):

@@ -29,6 +29,12 @@ class DomainModelGenerator:
             def __repr__(self):
                 return "<User: " + str(self.id) + " " + self.name + ">"
 
+            def __hash__(self):
+                return hash(self.id)
+
+            def __eq__(self, other):
+                return isinstance(other, User) and self.id == other.id
+
             def to_dict(self):
                 return {'id': self.id,
                         'name': self.name,
@@ -47,6 +53,12 @@ class DomainModelGenerator:
             def __repr__(self):
                 return "<Unit: " + str(self.id) + " " + self.name + ">"
 
+            def __hash__(self):
+                return hash(self.id)
+
+            def __eq__(self, other):
+                return isinstance(other, Unit) and self.id == other.id
+
             def to_json(self):
                 return {'id': self.id,
                         'name': self.name,
@@ -61,6 +73,12 @@ class DomainModelGenerator:
 
             def __repr__(self):
                 return "<Permission: " + str(self.id) + " " + self.name + ">"
+
+            def __hash__(self):
+                return hash(self.id)
+
+            def __eq__(self, other):
+                return isinstance(other, Permission) and self.id == other.id
 
         class Role(self.base):
             __tablename__ = 'role'
@@ -82,6 +100,12 @@ class DomainModelGenerator:
 
             def __repr__(self):
                 return "<Role: " + str(self.id) + " " + self.name + ">"
+
+            def __hash__(self):
+                return hash(self.id)
+
+            def __eq__(self, other):
+                return isinstance(other, Role) and self.id == other.id
 
         class RoleHierarchy(self.base):
             __tablename__ = 'role_role_hierarchy'
