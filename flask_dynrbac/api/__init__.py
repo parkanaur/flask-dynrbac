@@ -5,26 +5,22 @@ from .user_blueprint import UserApi, UserListApi
 
 from flask_restful import Api
 
-try:
-    # py2
-    import urlparse as _urlparse
-except ImportError:
-    import urllib.parse as _urlparse
-
 
 def generate_rbac_api(app, url_prefix='/api/rbac'):
     api = Api(app)
 
-    api.add_resource(PermissionApi, _urlparse.urljoin(url_prefix, '/permissions/<permission_id>'))
-    api.add_resource(PermissionListApi, _urlparse.urljoin(url_prefix, '/permissions'))
+    url_prefix = url_prefix.rstrip('/')
 
-    api.add_resource(RoleApi, _urlparse.urljoin(url_prefix, '/roles/<role_id>'))
-    api.add_resource(RoleListApi, _urlparse.urljoin(url_prefix, '/roles'))
+    api.add_resource(PermissionApi, url_prefix + '/permissions/<id>')
+    api.add_resource(PermissionListApi, url_prefix + '/permissions')
 
-    api.add_resource(UserApi, _urlparse.urljoin(url_prefix, '/users/<user_id>'))
-    api.add_resource(UserListApi, _urlparse.urljoin(url_prefix, '/users'))
+    api.add_resource(RoleApi, url_prefix + '/roles/<id>')
+    api.add_resource(RoleListApi, url_prefix + '/roles')
 
-    api.add_resource(UnitApi, _urlparse.urljoin(url_prefix, '/units/<unit_id>'))
-    api.add_resource(UnitListApi, _urlparse.urljoin(url_prefix, '/units'))
+    api.add_resource(UserApi, url_prefix + '/users/<id>')
+    api.add_resource(UserListApi, url_prefix + '/users')
+
+    api.add_resource(UnitApi, url_prefix + '/units/<id>')
+    api.add_resource(UnitListApi, url_prefix + '/units')
 
     return api
