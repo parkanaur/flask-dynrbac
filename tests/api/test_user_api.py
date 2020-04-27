@@ -65,3 +65,13 @@ def test_put_user(sample_filled_app, api_url):
     assert len(user['roles']) == 2
     for role in user['roles']:
         assert role['id'] in [1, 4]
+
+
+def test_delete_user(sample_filled_app, api_url):
+    app, db, rbac, dmg = sample_filled_app
+
+    r = send_request(app, api_url + '/users/2', method='delete')
+    assert r.status_code == 204, 'GOT ' + str(r.status_code) + ' ' + r.data
+
+    r = send_request(app, api_url + '/users/2')
+    assert r.status_code == 404, 'GOT ' + str(r.status_code) + ' ' + r.data
