@@ -55,3 +55,12 @@ class UserLogic(BaseLogic):
         self.session.add(user)
         self.session.commit()
 
+    def create_user(self, **kwargs):
+        user = self.User(name=kwargs['name'])
+        roles = self.session.query(self.Role).filter(self.Role.id.in_(kwargs['role_ids'])).all()
+        user.roles.extend(roles)
+
+        self.session.add(user)
+        self.session.commit()
+
+        return user

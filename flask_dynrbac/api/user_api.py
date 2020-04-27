@@ -1,17 +1,12 @@
-from flask_restful import Resource, abort, reqparse
+from flask_restful import Resource, abort
 from flask import current_app
+
 from flask_dynrbac.exc import DynRBACNotFoundException
+from flask_dynrbac.api.argparsers import user_update_parser, user_create_parser
 
 
 def _logic():
     return current_app.rbac.user_logic
-
-
-_parser = reqparse.RequestParser()
-_parser.add_argument('name', type=str, help='User name', location='json', store_missing=False)
-_parser.add_argument('update_roles', type=bool, help='Whether to update roles or not', location='json',
-                     store_missing=False)
-_parser.add_argument('role_ids', type=list, help='User role IDs {error_msg}', location='json', store_missing=False)
 
 
 class UserApi(Resource):
@@ -25,7 +20,7 @@ class UserApi(Resource):
         return self._get_or_abort(id).to_dict()
 
     def put(self, id):
-        kw = _parser.parse_args(strict=True)
+        kw = user_update_parser.parse_args(strict=True)
         user = self._get_or_abort(id)
 
         _logic().update_user(user, **kw)
@@ -43,4 +38,6 @@ class UserListApi(Resource):
         return [user.to_dict() for user in _logic().get_all()]
 
     def post(self):
-        return 'post_user_list'
+        kw = user_create_parser.parse_args(strict=True)
+        user = _logic().create_user(**kw)
+        return user.to_dict()
