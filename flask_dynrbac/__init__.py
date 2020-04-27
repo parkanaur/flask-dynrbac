@@ -29,9 +29,6 @@ class DynRBAC(object):
     :param permission_class: Permission entity class
     :param user_class: User entity class
     :param unit_class: Unit entity class
-    :param user_role_relationship: User-Role relationship class
-    :param role_permission_relationship: Role-Permission relationship class
-    :param unit_permission_relationship: Unit-Permission relationship class
     :param global_error_code: HTTP error code to return in case of permission mismatch. Defaults to 403 Forbidden
     :param unique_unit_names_only: If True, disallows repeating unit names during endpoint registration,
         i.e., there cannot be two functions with the same unit_name supplied to them. Setting this to True
@@ -42,7 +39,6 @@ class DynRBAC(object):
     """
 
     def __init__(self, app=None, session=None, user_id_provider=None, role_class=None, permission_class=None, user_class=None, unit_class=None,
-                 user_role_relationship=None, role_permission_relationship=None, unit_permission_relationship=None,
                  global_error_code=403,
                  unique_unit_names_only=False, create_missing_units=True):
         """Initializes, configures and binds the extension instance to an app"""
@@ -58,10 +54,6 @@ class DynRBAC(object):
         self.user_class = user_class
         self.unit_class = unit_class
 
-        self.user_role_relationship = user_role_relationship
-        self.role_permission_relationship = role_permission_relationship
-        self.unit_permission_relationship = unit_permission_relationship
-
         self.create_missing_units = create_missing_units
 
         #: Current endpoint collection
@@ -71,7 +63,7 @@ class DynRBAC(object):
         self.user_logic = UserLogic(self.user_class, self.permission_class, self.role_class,
                                     self.unit_class, self.session, self.role_logic)
         self.permission_logic = PermissionLogic(self.permission_class, self.session)
-        self.unit_logic = UnitLogic(self.unit_class, self.session)
+        self.unit_logic = UnitLogic(self.unit_class, self.permission_class, self.session)
 
         if app is not None:
             self.init_app(app)

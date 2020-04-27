@@ -90,8 +90,23 @@ def test_create_user(sample_filled_app, api_url):
     r = send_request(app, api_url + '/users/' + str(uid))
     assert r.status_code == 200, 'GOT ' + str(r.status_code) + ' ' + r.data
     user = r.get_json()
-    assert 'name' in user
-    assert 'id' in user
+    assert user['name'] == 'new_user_create'
     assert user['id'] == uid
-    assert 'roles' in user
     assert len(user['roles']) == 3
+
+
+def test_create_user_empty_roles(sample_filled_app, api_url):
+    app, db, rbac, dmg = sample_filled_app
+
+    r = send_request(app, api_url + '/users', method='post', json={
+        'name': 'new_user_create'
+    })
+    assert r.status_code == 200, 'GOT ' + str(r.status_code) + ' ' + r.data
+    uid = r.get_json()['id']
+
+    r = send_request(app, api_url + '/users/' + str(uid))
+    assert r.status_code == 200, 'GOT ' + str(r.status_code) + ' ' + r.data
+    user = r.get_json()
+    assert user['name'] == 'new_user_create'
+    assert user['id'] == uid
+    assert len(user['roles']) == 0

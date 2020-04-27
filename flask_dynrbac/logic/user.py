@@ -47,8 +47,9 @@ class UserLogic(BaseLogic):
         if 'name' in kwargs:
             user.name = kwargs['name']
         if 'update_roles' in kwargs and kwargs['update_roles'] and 'role_ids' in kwargs:
+            new_role_ids = kwargs['role_ids'] or []
             old_roles = set(user.roles)
-            new_roles = set(self.session.query(self.Role).filter(self.Role.id.in_(kwargs['role_ids'])).all())
+            new_roles = set(self.session.query(self.Role).filter(self.Role.id.in_(new_role_ids)).all())
             user.roles.extend(new_roles - old_roles)
             for role in old_roles - new_roles:
                 user.roles.remove(role)
@@ -57,7 +58,8 @@ class UserLogic(BaseLogic):
 
     def create_user(self, **kwargs):
         user = self.User(name=kwargs['name'])
-        roles = self.session.query(self.Role).filter(self.Role.id.in_(kwargs['role_ids'])).all()
+        role_ids = kwargs['role_ids'] or []
+        roles = self.session.query(self.Role).filter(self.Role.id.in_(role_ids)).all()
         user.roles.extend(roles)
 
         self.session.add(user)

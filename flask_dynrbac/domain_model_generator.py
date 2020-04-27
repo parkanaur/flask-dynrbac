@@ -59,11 +59,11 @@ class DomainModelGenerator:
             def __eq__(self, other):
                 return isinstance(other, Unit) and self.id == other.id
 
-            def to_json(self):
+            def to_dict(self):
                 return {'id': self.id,
                         'name': self.name,
                         'perms_all_required': self.perms_all_required,
-                        'permissions': self.permissions}
+                        'permissions': [{'id': perm.id, 'name': perm.name} for perm in self.permissions]}
 
         class Permission(self.base):
             __tablename__ = 'permission'
