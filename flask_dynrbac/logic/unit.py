@@ -27,3 +27,19 @@ class UnitLogic(BaseLogic):
         self.session.commit()
 
         return unit
+
+    def update_unit(self, unit, **kwargs):
+        if 'name' in kwargs:
+            unit.name = kwargs['name']
+        if 'perms_all_required' in kwargs:
+            unit.perms_all_required = kwargs['perms_all_required']
+        if 'update_permissions' in kwargs and kwargs['update_permissions'] and 'permission_ids' in kwargs:
+            new_perm_ids = kwargs['permission_ids'] or []
+            old_perms = set(unit.permissions)
+            new_perms = set(self.session.query(self.Permission).filter(self.Permission.id.in_(new_perm_ids)).all())
+            unit.permissions.extend(new_perms - old_perms)
+            for perm in old_perms - new_perms:
+                unit.permissions.remove(perm)
+
+        self.session.add(unit)
+        self.session.commit()

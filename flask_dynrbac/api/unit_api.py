@@ -20,10 +20,18 @@ class UnitApi(Resource):
         return self._get_or_abort(id).to_dict()
 
     def put(self, id):
-        return 'put_unit'
+        kw = unit_update_parser.parse_args(strict=True)
+        unit = self._get_or_abort(id)
+
+        _logic().update_unit(unit, **kw)
+
+        return '', 204
 
     def delete(self, id):
-        return 'delete_unit'
+        unit = self._get_or_abort(id)
+        _logic().delete(unit)
+
+        return '', 204
 
 
 class UnitListApi(Resource):

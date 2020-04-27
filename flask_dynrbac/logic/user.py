@@ -53,6 +53,7 @@ class UserLogic(BaseLogic):
             user.roles.extend(new_roles - old_roles)
             for role in old_roles - new_roles:
                 user.roles.remove(role)
+
         self.session.add(user)
         self.session.commit()
 

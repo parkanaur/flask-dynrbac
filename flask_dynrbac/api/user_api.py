@@ -30,6 +30,7 @@ class UserApi(Resource):
     def delete(self, id):
         user = self._get_or_abort(id)
         _logic().delete(user)
+
         return '', 204
 
 
