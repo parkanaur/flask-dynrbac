@@ -62,7 +62,7 @@ class DynRBAC(object):
         self.role_logic = RoleLogic(self.role_class, self.session)
         self.user_logic = UserLogic(self.user_class, self.permission_class, self.role_class,
                                     self.unit_class, self.session, self.role_logic)
-        self.permission_logic = PermissionLogic(self.permission_class, self.session)
+        self.permission_logic = PermissionLogic(self.permission_class, self.role_class, self.unit_class, self.session)
         self.unit_logic = UnitLogic(self.unit_class, self.permission_class, self.session)
 
         if app is not None:
@@ -134,7 +134,7 @@ class DynRBAC(object):
             else:
                 self.registered_endpoints[unit] = func
                 if not self.unit_logic.is_unit_in_db(unit) and self.create_missing_units:
-                    self.unit_logic.add_to_db(unit)
+                    self.unit_logic.create_unit(name=unit)
 
             @wraps(func)
             def wrapper(*args, **kwargs):

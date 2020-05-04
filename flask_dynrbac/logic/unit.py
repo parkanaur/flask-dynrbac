@@ -18,10 +18,10 @@ class UnitLogic(BaseLogic):
 
     def create_unit(self, **kwargs):
         unit = self.Unit(name=kwargs['name'])
-        permission_ids = kwargs['permission_ids'] or []
-        permissions = self.session.query(self.Permission).filter(self.Permission.id.in_(permission_ids)).all()
+        permission_ids = kwargs.get('permission_ids') or []
+        permissions = self.session.query(self.Permission).filter(self.Permission.id.in_(permission_ids)).all() or []
         unit.permissions.extend(permissions)
-        unit.perms_all_required = kwargs['perms_all_required']
+        unit.perms_all_required = kwargs.get('perms_all_required') or False
 
         self.session.add(unit)
         self.session.commit()

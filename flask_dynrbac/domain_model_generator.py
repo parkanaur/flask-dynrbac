@@ -80,6 +80,12 @@ class DomainModelGenerator:
             def __eq__(self, other):
                 return isinstance(other, Permission) and self.id == other.id
 
+            def to_dict(self):
+                return {'id': self.id,
+                        'name': self.name,
+                        'roles': [{'id': role.id, 'name': role.name} for role in self.roles],
+                        'units': [{'id': unit.id, 'name': unit.name} for unit in self.units]}
+
         class Role(self.base):
             __tablename__ = 'role'
 
@@ -106,6 +112,15 @@ class DomainModelGenerator:
 
             def __eq__(self, other):
                 return isinstance(other, Role) and self.id == other.id
+
+            def to_dict(self):
+                return {'id': self.id,
+                        'name': self.name,
+                        'permissions': [{'id': perm.id, 'name': perm.name} for perm in self.permissions],
+                        'users': [{'id': user.id, 'name': user.name} for user in self.users],
+                        'parent_roles': [{'id': role.id, 'name': role.name} for role in self.parents],
+                        'child_roles': [{'id': role.id, 'name': role.name} for role in self.children],
+                        'incompatible_roles': [{'id': role.id, 'name': role.name} for role in self.incompatible_roles]}
 
         class RoleHierarchy(self.base):
             __tablename__ = 'role_role_hierarchy'

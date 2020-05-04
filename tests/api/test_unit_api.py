@@ -99,7 +99,7 @@ def test_create_unit(sample_filled_app, api_url):
     assert len(unit['permissions']) == 3
 
 
-def test_create_unit_empty_permissions(sample_filled_app, api_url):
+def test_create_empty_unit(sample_filled_app, api_url):
     app, db, rbac, dmg = sample_filled_app
 
     r = send_request(app, api_url + '/units', method='post', json={
