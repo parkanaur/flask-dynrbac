@@ -36,11 +36,13 @@ class DynRBAC(object):
         definitions in those modules) and if you leave unit_name parameters blank (see default unit_name in
         :meth:`flask_dynrbac.DynRBAC.rbac`).
     :param create_missing_units: If True, will create missing units in the database during permission checks.
+    :param create_permission_for_missing_units: If True, will create a permission for a created missing unit (see
+        `create_missing_unit` param).
     """
 
     def __init__(self, app=None, session=None, user_id_provider=None, role_class=None, permission_class=None, user_class=None, unit_class=None,
                  global_error_code=403,
-                 unique_unit_names_only=False, create_missing_units=True):
+                 unique_unit_names_only=False, create_missing_units=True, create_permission_for_missing_units=False):
         """Initializes, configures and binds the extension instance to an app"""
         self.app = app
         self.global_error_code = global_error_code
@@ -55,6 +57,7 @@ class DynRBAC(object):
         self.unit_class = unit_class
 
         self.create_missing_units = create_missing_units
+        self.create_permission_for_missing_units = create_permission_for_missing_units
 
         #: Current endpoint collection
         self.registered_endpoints = {}
@@ -134,7 +137,9 @@ class DynRBAC(object):
             else:
                 self.registered_endpoints[unit] = func
                 if not self.unit_logic.is_unit_in_db(unit) and self.create_missing_units:
-                    self.unit_logic.create_unit(name=unit)
+                    u = self.unit_logic.create_unit(name=unit)
+                    if self.create_permission_for_missing_units:
+                        self.permission_logic.create_permission(name='can_access_' + unit, unit_ids=[u.id])
 
             @wraps(func)
             def wrapper(*args, **kwargs):
