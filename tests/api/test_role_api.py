@@ -74,13 +74,13 @@ def test_put_role(sample_filled_app, api_url):
 
     # Test parent roles
     r2 = send_request(app, api_url + '/roles/2').get_json()
-    assert r2['children'][0]['id'] == 1
+    assert any(r['id'] == 1 for r in r2['children'])
     r3 = send_request(app, api_url + '/roles/3').get_json()
-    assert r3['children'][0]['id'] == 1
+    assert any(r['id'] == 1 for r in r3['children'])
 
     # Test child roles
     r4 = send_request(app, api_url + '/roles/4').get_json()
-    assert r4['parents'][0]['id'] == 1
+    assert any(r['id'] == 1 for r in r4['parents'])
 
 
 def test_create_role(sample_filled_app, api_url):
@@ -114,15 +114,15 @@ def test_create_role(sample_filled_app, api_url):
 
     # Test parent roles
     r1 = send_request(app, api_url + '/roles/1').get_json()
-    assert r1['children'][0]['id'] == rid
+    assert any(r['id'] == rid for r in r1['children'])
     r2 = send_request(app, api_url + '/roles/2').get_json()
-    assert r2['children'][0]['id'] == rid
+    assert any(r['id'] == rid for r in r2['children'])
 
     # Test child roles
     r4 = send_request(app, api_url + '/roles/4').get_json()
-    assert r4['parents'][0]['id'] == rid
+    assert any(r['id'] == rid for r in r4['parents'])
     r3 = send_request(app, api_url + '/roles/3').get_json()
-    assert r3['parents'][0]['id'] == rid
+    assert any(r['id'] == rid for r in r3['parents'])
 
 
 def test_create_empty_role(sample_filled_app, api_url):
