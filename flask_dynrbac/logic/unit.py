@@ -33,7 +33,7 @@ class UnitLogic(BaseLogic):
             unit.name = kwargs['name']
         if 'perms_all_required' in kwargs:
             unit.perms_all_required = kwargs['perms_all_required']
-        if 'update_permissions' in kwargs and kwargs['update_permissions'] and 'permission_ids' in kwargs:
+        if kwargs.get('update_permissions', False) and 'permission_ids' in kwargs:
             new_perm_ids = kwargs['permission_ids'] or []
             old_perms = set(unit.permissions)
             new_perms = set(self.session.query(self.Permission).filter(self.Permission.id.in_(new_perm_ids)).all())

@@ -46,7 +46,7 @@ class UserLogic(BaseLogic):
     def update_user(self, user, **kwargs):
         if 'name' in kwargs:
             user.name = kwargs['name']
-        if 'update_roles' in kwargs and kwargs['update_roles'] and 'role_ids' in kwargs:
+        if kwargs.get('update_roles', False) and 'role_ids' in kwargs:
             new_role_ids = kwargs['role_ids'] or []
             old_roles = set(user.roles)
             new_roles = set(self.session.query(self.Role).filter(self.Role.id.in_(new_role_ids)).all())

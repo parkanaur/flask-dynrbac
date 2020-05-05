@@ -95,7 +95,7 @@ def test_create_user(sample_filled_app, api_url):
     assert len(user['roles']) == 3
 
 
-def test_create_user_empty_roles(sample_filled_app, api_url):
+def test_create_empty_user(sample_filled_app, api_url):
     app, db, rbac, dmg = sample_filled_app
 
     r = send_request(app, api_url + '/users', method='post', json={

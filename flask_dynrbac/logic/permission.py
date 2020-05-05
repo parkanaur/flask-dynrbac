@@ -28,7 +28,7 @@ class PermissionLogic(BaseLogic):
         if 'name' in kwargs:
             permission.name = kwargs['name']
 
-        if 'update_units' in kwargs and kwargs['update_units'] and 'unit_ids' in kwargs:
+        if kwargs.get('update_units', False) and 'unit_ids' in kwargs:
             new_unit_ids = kwargs['unit_ids'] or []
             old_units = set(permission.units)
             new_units = set(self.session.query(self.Unit).filter(self.Unit.id.in_(new_unit_ids)).all())
@@ -36,7 +36,7 @@ class PermissionLogic(BaseLogic):
             for unit in old_units - new_units:
                 permission.units.remove(unit)
 
-        if 'update_roles' in kwargs and kwargs['update_roles'] and 'role_ids' in kwargs:
+        if kwargs.get('update_roles', False) and 'role_ids' in kwargs:
             new_role_ids = kwargs['role_ids'] or []
             old_roles = set(permission.roles)
             new_roles = set(self.session.query(self.Role).filter(self.Role.id.in_(new_role_ids)).all())

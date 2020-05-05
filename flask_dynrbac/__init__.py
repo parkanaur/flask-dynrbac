@@ -59,7 +59,7 @@ class DynRBAC(object):
         #: Current endpoint collection
         self.registered_endpoints = {}
 
-        self.role_logic = RoleLogic(self.role_class, self.session)
+        self.role_logic = RoleLogic(self.role_class, self.user_class, self.permission_class, self.session)
         self.user_logic = UserLogic(self.user_class, self.permission_class, self.role_class,
                                     self.unit_class, self.session, self.role_logic)
         self.permission_logic = PermissionLogic(self.permission_class, self.role_class, self.unit_class, self.session)

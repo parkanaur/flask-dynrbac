@@ -118,9 +118,11 @@ class DomainModelGenerator:
                         'name': self.name,
                         'permissions': [{'id': perm.id, 'name': perm.name} for perm in self.permissions],
                         'users': [{'id': user.id, 'name': user.name} for user in self.users],
-                        'parent_roles': [{'id': role.id, 'name': role.name} for role in self.parents],
-                        'child_roles': [{'id': role.id, 'name': role.name} for role in self.children],
-                        'incompatible_roles': [{'id': role.id, 'name': role.name} for role in self.incompatible_roles]}
+                        'parents': [{'id': role.id, 'name': role.name} for role in self.parents],
+                        'children': [{'id': role.id, 'name': role.name} for role in self.children],
+                        'incompatible_roles': [{'id': role.id, 'name': role.name} for role in set().union(
+                            self.incompatible_roles, self.roles_restricted_by_this_role
+                        )]}
 
         class RoleHierarchy(self.base):
             __tablename__ = 'role_role_hierarchy'
