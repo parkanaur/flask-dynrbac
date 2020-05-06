@@ -7,7 +7,7 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name='Flask-DynRBAC',
-    version='0.0.1',
+    version='0.1.0',
     packages=find_packages(),
     description='A Flask extension for dynamic role-based access',
     long_description=long_description,
@@ -20,7 +20,7 @@ setup(
         'api': ['flask-restful']
     },
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
 
