@@ -33,13 +33,13 @@ optional HTTP API requires the Flask-RESTful extension.
 **Note:** PyPI extension upload will be done soon.
 
 Minimal installation (without API)
-##################################
+----------------------------------
 ::
 
     pip install git+https://github.com/parkanaur/flask-dynrbac
 
 Full installation
-#################
+-----------------
 ::
 
     pip install flask-restful
@@ -56,7 +56,7 @@ constructor or you can use `init_app()`.
    :members:
 
 Initialization example
-######################
+----------------------
 ::
 
    from flask import Flask
@@ -77,8 +77,26 @@ Initialization example
        role_class=Role, permission_class=Permission, user_class=User, unit_class=Unit)
    rbac.init_app(app)
 
-Domain Model generation
-=======================
+Entity classes
+==============
+The domain model is comprised of four SQLAlchemy entities: `User`, `Unit`, `Permission`, and `Role`.
+Each entity has a list of attributes (i.e. SQLAlchemy columns/relationships) necessary for the extension to
+work properly.
+
+User
+----
+
+Role
+----
+
+Permission
+----------
+
+Unit
+----
+
+Domain Model Generator
+======================
 
 You can use :class:`flask_dynrbac.domain_model_generator.DomainModelGenerator` in order to expand
 or create new entity classes that fit into your domain model.
