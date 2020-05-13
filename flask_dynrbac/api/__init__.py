@@ -7,6 +7,13 @@ from flask_restful import Api
 
 
 def generate_rbac_api(app, url_prefix='/api/rbac'):
+    """Adds API routes to the provided app. The routes will be available
+    under the supplied URL prefix (defaults to '/api/rbac').
+    E.g.: `127.0.0.1/api/rbac/permissions`, or `127.0.0.1/api/rbac/users/<id>`
+
+    :param app: Flask app
+    :param url_prefix: URL prefix for API
+    """
     api = Api(app)
 
     url_prefix = url_prefix.rstrip('/')

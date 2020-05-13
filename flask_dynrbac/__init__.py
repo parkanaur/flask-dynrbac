@@ -40,9 +40,9 @@ class DynRBAC(object):
         `create_missing_unit` param).
     """
 
-    def __init__(self, app=None, session=None, user_id_provider=None, role_class=None, permission_class=None, user_class=None, unit_class=None,
-                 global_error_code=403,
-                 unique_unit_names_only=False, create_missing_units=True, create_permission_for_missing_units=False):
+    def __init__(self, app=None, session=None, user_id_provider=None, role_class=None, permission_class=None,
+                 user_class=None, unit_class=None, global_error_code=403, unique_unit_names_only=False,
+                 create_missing_units=True, create_permission_for_missing_units=False):
         """Initializes, configures and binds the extension instance to an app"""
         self.app = app
         self.global_error_code = global_error_code

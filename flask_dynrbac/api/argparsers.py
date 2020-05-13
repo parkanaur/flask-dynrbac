@@ -1,3 +1,9 @@
+"""The argparsers module defines parameters for API calls.
+Each domain model class (`User`, `Unit`, `Permission`, `Role`)
+has two parsers defined in this module: one for creating a new entity (`*_create_parser`),
+and one for updating an existing entity (`*_update_parser`).
+"""
+
 from flask_restful import reqparse
 
 user_create_parser = reqparse.RequestParser()

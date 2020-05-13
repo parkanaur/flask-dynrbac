@@ -19,22 +19,63 @@ database lookups and stores::
       # logic goes here
 
 Role and permission management can be done manually or via
-the pluggable API with optional HTML views.
+the pluggable API.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-How it works
-============
+Installing and requirements
+===========================
 
-All the work is done by the :meth:`flask_dynrbac.DynRBAC.rbac` decorator.
+This extension relies on SQLAlchemy to work properly, and the
+optional HTTP API requires the Flask-RESTful extension.
+**Note:** PyPI extension upload will be done soon.
+
+Minimal installation (without API)
+##################################
+::
+
+    pip install git+https://github.com/parkanaur/flask-dynrbac
+
+Full installation
+#################
+::
+
+    pip install flask-restful
+    pip install git+https://github.com/parkanaur/flask-dynrbac
+
+Initializing and configuring extension
+======================================
+
+The extension's constructor accepts various required and optional parameters.
+You can either bind your app to the extension's instance directly via the
+constructor or you can use `init_app()`.
 
 .. automodule:: flask_dynrbac
    :members:
 
-.. automodule:: flask_dynrbac.exc
-   :members:
+Initialization example
+######################
+::
+
+   from flask import Flask
+   from .models import User, Unit, Role, Permission
+   from .db import db # Flask-SQLAlchemy instance
+   from flask_dynrbac import DynRBAC
+   from .session import get_current_user_id
+
+   app = Flask(__name__)
+   app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+   db.init_app(app)
+
+   rbac = DynRBAC(app, session=db.session, user_id_provider=get_current_user_id,
+       role_class=Role, permission_class=Permission, user_class=User, unit_class=Unit)
+
+   # Alternate way:
+   rbac = DynRBAC(session=db.session, user_id_provider=get_current_user_id,
+       role_class=Role, permission_class=Permission, user_class=User, unit_class=Unit)
+   rbac.init_app(app)
 
 Domain Model generation
 =======================
@@ -50,22 +91,33 @@ Flask-SQLAlchemy's `SQLAlchemy.model`)::
 
    from flask import Flask
    from flask_sqlalchemy import SQLAlchemy
+   from flask_dynrbac import DynRBAC
    from flask_dynrbac.domain_model_generator import DomainModelGenerator
 
    app = Flask(__name__)
+   app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
    db = SQLAlchemy(app)
 
-   dmg = DomainModelGenerator(db.Model)
+   # Init domain model
+   models = DomainModelGenerator(db.Model)
+   db.create_all()
 
-   # Use dmg.User, dmg.Permission, dmg.Role classes...
+   # Init RBAC
+   rbac = DynRBAC(app, role_class=models.Role, user_class=models.User, permission_class=models.Permission,
+                  session=db.session, user_id_provider=lambda: current_user_id, unit_class=models.Unit)
 
 .. automodule:: flask_dynrbac.domain_model_generator
    :members:
 
-Pluggable API
-=============
+Using extension
+===============
 
-HTML Views
+All the work is done by the :meth:`flask_dynrbac.DynRBAC.rbac` decorator.
+
+.. automodule:: flask_dynrbac.exc
+   :members:
+
+Pluggable API
 =============
 
 Indices and tables
