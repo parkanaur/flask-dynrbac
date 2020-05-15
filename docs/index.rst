@@ -30,7 +30,8 @@ Installing and requirements
 
 This extension relies on SQLAlchemy to work properly, and the
 optional HTTP API requires the Flask-RESTful extension.
-**Note:** PyPI extension upload will be done soon.
+
+.. note:: PyPI extension upload will be done soon.
 
 Minimal installation (without API)
 ----------------------------------
@@ -77,14 +78,25 @@ Initialization example
        role_class=Role, permission_class=Permission, user_class=User, unit_class=Unit)
    rbac.init_app(app)
 
-Entity classes
-==============
+Entity classes and relationships
+================================
 The domain model is comprised of four SQLAlchemy entities: `User`, `Unit`, `Permission`, and `Role`.
 Each entity has a list of attributes (i.e. SQLAlchemy columns/relationships) necessary for the extension to
 work properly.
 
+Primarily, an ID column is required in each entity, as well as relationships between entities according to the domain
+model.
+
+Alternatively, you can use :class:`flask_dynrbac.domain_model_generator.DomainModelGenerator` to automatically
+create all domain model classes and relationships.
+
+.. image:: res/domain_model.png
+
+.. note:: Refer to :class:`flask_dynrbac.domain_model_generator.DomainModelGenerator` source code for more details.
+
 User
 ----
+:ID
 
 Role
 ----
@@ -130,13 +142,41 @@ Flask-SQLAlchemy's `SQLAlchemy.model`)::
 Using extension
 ===============
 
-All the work is done by the :meth:`flask_dynrbac.DynRBAC.rbac` decorator.
+All the work is done by the :meth:`flask_dynrbac.DynRBAC.rbac` decorator. Upon
+applying the decorator to a route, the function is registered in the extension's
+internal dictionary. If `create_missing_units` parameter is set to True, the decorator
+will also create a record for that function in the database, and if `create_permission_for_missing_units`
+parameter is True, a permission for that new function will be created.
+
+Function registration examples
+------------------------------
+::
+
+    ### some_routes.py
+
+    # No protection
+    @app.route('/')
+    def basic():
+        return 'Hello World!'
+
+    # Implied unit name: some_routes_unit1
+    @app.route('/unit1')
+    @rbac.rbac()
+    def unit1():
+        return 'Hello World!'
+
+    # Customized protection: include hierarchy check,
+    # throw HTTP 404 on failed check
+    @app.route('/unit2')
+    @rbac.rbac(unit_name='unit2_custom', check_hierarchy=True, error_code=404)
+    def unit2():
+        return 'Hello World!'
 
 .. automodule:: flask_dynrbac.exc
    :members:
 
-Pluggable API
-=============
+Optional HTTP JSON API
+======================
 
 Indices and tables
 ==================

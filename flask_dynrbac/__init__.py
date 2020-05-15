@@ -136,7 +136,7 @@ class DynRBAC(object):
                                    'a provided default (func.__module__ + "_" + func.__name__'.format(unit=unit))
             else:
                 self.registered_endpoints[unit] = func
-                if not self.unit_logic.is_unit_in_db(unit) and self.create_missing_units:
+                if self.create_missing_units and not self.unit_logic.is_unit_in_db(unit):
                     u = self.unit_logic.create_unit(name=unit)
                     if self.create_permission_for_missing_units:
                         self.permission_logic.create_permission(name='can_access_' + unit, unit_ids=[u.id])
