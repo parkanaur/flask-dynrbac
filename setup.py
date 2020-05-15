@@ -15,10 +15,7 @@ setup(
     url='https://github.com/parkanaur/flask-dynrbac',
     author='Daniil Kraynov',
     author_email='krd@airmail.cc',
-    install_requires=['flask', 'flask-sqlalchemy'],
-    extras_require={
-        'api': ['flask-restful']
-    },
+    install_requires=['flask', 'flask-sqlalchemy', 'flask-restful'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
