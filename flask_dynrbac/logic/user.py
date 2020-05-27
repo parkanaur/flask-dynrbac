@@ -36,6 +36,9 @@ class UserLogic(BaseLogic):
         user_perms = set(map(lambda perm: perm.name, self.get_user_permissions(user_id, with_children)))
         unit_perms = set(map(lambda perm: perm.name, unit.permissions))
 
+        if len(unit_perms) == 0:
+            return True
+
         ok_perms = len(unit_perms.intersection(user_perms))
 
         if unit.perms_all_required:
